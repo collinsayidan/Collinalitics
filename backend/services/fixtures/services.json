@@ -1,0 +1,77 @@
+[
+  {
+    "model": "services.servicecategory",
+    "pk": 1,
+    "fields": {
+      "name": "Analytics",
+      "slug": "analytics",
+      "description": "Insights and decision support."
+    }
+  },
+  {
+    "model": "services.service",
+    "pk": 1,
+    "fields": {
+      "title": "Dashboards",
+      "slug": "dashboards",
+      "excerpt": "Visualize key metrics to uncover trends.",
+      "description": "We design executive and operational dashboards with robust data modeling and clear UX.",
+      "category": 1,
+      "icon": "fa-chart-line",
+      "is_active": true,
+      "order": 1
+    }
+  },
+  {
+    "model": "services.servicefeature",
+    "pk": 1,
+    "fields": {
+      "service": 1,
+      "label": "KPI alignment and governance"
+    }
+  },
+  {
+    "model": "services.servicefeature",
+    "pk": 2,
+    "fields": {
+      "service": 1,
+      "label": "Data modeling and semantic layers"
+    }
+  },
+  {
+    "model": "services.service",
+    "pk": 2,
+    "fields": {
+      "title": "Automation",
+      "slug": "automation",
+      "excerpt": "Streamline workflows with data-driven processes.",
+      "description": "Build data pipelines and automate repetitive tasks.",
+      "category": 1,
+      "icon": "fa-robot",
+      "is_active": true,
+      "order": 2
+    }
+  },
+  {
+    "model": "services.servicefeature",
+    "pk": 3,
+    "fields": {
+      "service": 2,
+      "label": "ETL/ELT pipelines"
+    }
+  },
+  {
+    "model": "services.service",
+    "pk": 3,
+    "fields": {
+      "title": "Advisory",
+      "slug": "advisory",
+      "excerpt": "Leverage expertise to solve complex challenges.",
+      "description": "Strategy, architecture, and data governance support.",
+      "category": 1,
+      "icon": "fa-lightbulb",
+      "is_active": true,
+      "order": 3
+    }
+  }
+]
