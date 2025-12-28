@@ -1,18 +1,87 @@
 
-import { Helmet } from 'react-helmet-async'
-import { SITE_NAME, SITE_URL, DEFAULT_OG_IMAGE } from '../config/seo'
-import { Link } from 'react-router-dom'
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
+import { SITE_NAME, SITE_URL, DEFAULT_OG_IMAGE } from '../config/seo';
+
+// Helper to fetch services (supports paginated or flat DRF responses)
+async function fetchServicesHome() {
+  const res = await fetch('/api/services/');
+  if (!res.ok) throw new Error('Failed to load services');
+  const data = await res.json();
+  // If paginated, use data.results; if array, use data; else empty
+  const items = Array.isArray(data)
+    ? data
+    : Array.isArray(data?.results)
+      ? data.results
+      : [];
+  return items;
+}
+
+// Reuse icon sanitizer from Services page
+function normalizeIcon(icon) {
+  if (!icon) return 'fa-solid fa-layer-group';
+  const parts = String(icon).trim().split(/\s+/).filter(p => p.startsWith('fa'));
+  return parts.length ? parts.join(' ') : 'fa-solid fa-layer-group';
+}
 
 export default function Home() {
-  const title = `Data insights that move businesses | ${SITE_NAME}`
-  const description = 'Empower your organization with actionable insights and drive growth through data-driven decision making.'
-  const canonical = `${SITE_URL}/`
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'Organization',
-    name: SITE_NAME,
-    url: SITE_URL,
-  }
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [err, setErr] = useState(null);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const all = await fetchServicesHome();
+        // Sort by 'order' (lowest first), then title
+        const sorted = [...all].sort(
+          (a, b) => (a.order - b.order) || a.title.localeCompare(b.title)
+        );
+        setItems(sorted.slice(0, 3)); // top 3
+      } catch (e) {
+        setErr(e?.message || 'Failed to load services');
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
+
+  const title = `Data insights that move businesses | ${SITE_NAME}`;
+  const description = 'Empower your organization with actionable insights and drive growth through data-driven decision making.';
+  const canonical = `${SITE_URL}/`;
+
+  // Skeletons while loading
+  const cardsSkeleton = (
+    <div className="grid">
+      {[...Array(3)].map((_, i) => (
+        <div className="card skeleton" key={i}>
+          <div className="icon-skeleton" />
+          <div className="lines">
+            <div className="line" />
+            <div className="line short" />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+
+  const cardsContent = (
+    <div className="grid">
+      {items.map(s => (
+        <Link to={`/services/${s.slug}`} key={s.id} className="card">
+          <div className="icon-bubble">
+            <i className={normalizeIcon(s.icon)} aria-hidden="true"></i>
+          </div>
+          <div className="card-body">
+            <h3 className="card-title">{s.title}</h3>
+            <p className="card-excerpt">{s.excerpt}</p>
+            <div className="card-cta">View details →</div>
+          </div>
+        </Link>
+      ))}
+    </div>
+  );
 
   return (
     <>
@@ -20,6 +89,7 @@ export default function Home() {
         <title>{title}</title>
         <link rel="canonical" href={canonical} />
         <meta name="description" content={description} />
+        {/* Open Graph / Twitter */}
         <meta property="og:type" content="website" />
         <meta property="og:site_name" content={SITE_NAME} />
         <meta property="og:title" content={title} />
@@ -30,22 +100,35 @@ export default function Home() {
         <meta name="twitter:title" content={title} />
         <meta name="twitter:description" content={description} />
         <meta name="twitter:image" content={DEFAULT_OG_IMAGE} />
-        <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
+        {/* Organization JSON-LD */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'Organization',
+            name: SITE_NAME,
+            url: SITE_URL
+          })}
+        </script>
       </Helmet>
 
-      <section className="hero gradient">
-        <h1>Data insights that move businesses</h1>
+      <section className="container">
+        <h1 className="page-title">Data insights that move businesses</h1>
         <p>{description}</p>
-        <div className="cta-row">
+
+        <div className="cta-row" style={{ margin: '12px 0 22px' }}>
           <Link className="btn primary" to="/portfolio">View Projects</Link>
-          <Link className="btn outline" to="/contact">Start a project</Link>
+          <Link className="btn primary" to="/contact" style={{ marginLeft: 8 }}>Start a project</Link>
         </div>
-        <div className="service-cards">
-          <article className="card"><h3>Dashboards</h3><p>Visualize key metrics to uncover trends and inform strategy.</p></article>
-          <article className="card"><h3>Automation</h3><p>Streamline workflows and increase efficiency with data-driven processes.</p></article>
-          <article className="card"><h3>Advisory</h3><p>Leverage expertise to solve complex business challenges.</p></article>
-        </div>
+
+        <h2 className="section-title">Top services</h2>
+
+        {err ? (
+          <div className="alert error">
+            <strong>Error:</strong> {err}
+            <div className="tips">Check backend at http://localhost:8000 and Vite proxy in frontend/vite.config.js.</div>
+          </div>
+        ) : (loading ? cardsSkeleton : cardsContent)}
       </section>
     </>
-  )
+  );
 }
