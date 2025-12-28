@@ -1,4 +1,5 @@
 
+# backend/services/models.py
 from django.db import models
 
 class ServiceCategory(models.Model):
@@ -22,7 +23,8 @@ class Service(models.Model):
     icon = models.CharField(max_length=64, blank=True, help_text="Optional icon name (e.g. 'fa-chart-line')")
     is_active = models.BooleanField(default=True)
     order = models.PositiveIntegerField(default=0)
-    projects = models.ManyToManyField('portfolio.Project', blank=True, related_name='services')
+    # NOTE: We DO NOT declare a ManyToMany 'projects' field here.
+    # Case studies are managed via the ordered through model 'ServiceProject'.
 
     def __str__(self):
         return self.title
@@ -34,3 +36,20 @@ class ServiceFeature(models.Model):
 
     def __str__(self):
         return f"{self.service.title} – {self.label}"
+
+
+class ServiceProject(models.Model):
+    """
+    Ordered through model connecting Service <-> portfolio.Project
+    Enables explicit per-service display order for case studies.
+    """
+    service = models.ForeignKey('Service', on_delete=models.CASCADE)
+    project = models.ForeignKey('portfolio.Project', on_delete=models.CASCADE)
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        unique_together = ('service', 'project')
+        ordering = ('order', 'id')
+
+    def __str__(self):
+        return f"{self.service} → {self.project} (order {self.order})"
