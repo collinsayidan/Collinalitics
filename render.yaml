@@ -5,7 +5,7 @@ services:
     name: collinalitics-backend
     env: python
     rootDir: backend
-    plan: free  # you can keep free since we don't use disks
+    plan: free  # keep free since we don't attach disks
 
     buildCommand: |
       pip install -r requirements.txt
@@ -25,10 +25,8 @@ services:
       - key: CSRF_TRUSTED_ORIGINS
         value: https://collinalitics-backend.onrender.com
 
-      # Secrets (set values in the Render dashboard, not in git)
+      # Secrets (values will be set in Render Dashboard, not committed)
       - key: DJANGO_SECRET_KEY
         sync: false
-
-      # PostgreSQL connection string provided by Render Postgres
       - key: DATABASE_URL
         sync: false
