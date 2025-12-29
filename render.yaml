@@ -23,7 +23,7 @@ services:
       - key: CORS_ALLOW_ALL_ORIGINS
         value: "True"
       - key: CSRF_TRUSTED_ORIGINS
-        value: https://collinalitics-backend.onrender.com
+        value: https://collinalitics-backend-cj2b.onrender.com
 
       # Secrets (values will be set in Render Dashboard, not committed)
       - key: DJANGO_SECRET_KEY
