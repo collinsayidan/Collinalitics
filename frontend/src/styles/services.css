@@ -147,4 +147,26 @@ body {
 /* Simple margin utility */
 .mt-16 { margin-top: 16px; }
 
+/* Filters bar */
+.filters { margin: 8px 0 10px; border: 1px solid var(--border); border-radius: 10px; padding: 10px; background: var(--surface); }
+.filters-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.filters-group { display: grid; gap: 6px; }
+.filters-label { font-size: 0.85rem; color: var(--muted); }
+.select {
+  background: #0e1524; color: var(--text); border: 1px solid var(--border);
+  border-radius: 8px; padding: 8px 10px;
+}
+
+/* Chip active state (we already have .chip) */
+.chip.active {
+  background: #1b3c63; border-color: #2f6aa5; color: #e7f4ff;
+}
+
+/* Optional: outline button style */
+.btn.outline {
+  display: inline-block; padding: 8px 12px; border-radius: 10px; text-decoration: none;
+  background: transparent; color: var(--primary); border: 1px solid #1e86c4; font-weight: 700;
+}
+.btn.outline:hover { background: rgba(77,182,255,0.08); }
+
 @keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
