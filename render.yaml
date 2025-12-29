@@ -5,8 +5,7 @@ services:
     name: collinalitics-backend
     env: python
     rootDir: backend
-    # IMPORTANT: disks require a plan that supports them. Change to "starter" or "pro".
-    plan: starter
+    plan: free  # you can keep free since we don't use disks
 
     buildCommand: |
       pip install -r requirements.txt
@@ -16,6 +15,7 @@ services:
     startCommand: gunicorn config.wsgi:application --log-file -
 
     envVars:
+      # Non-secret vars
       - key: DJANGO_DEBUG
         value: "False"
       - key: DJANGO_ALLOWED_HOSTS
@@ -25,20 +25,10 @@ services:
       - key: CSRF_TRUSTED_ORIGINS
         value: https://collinalitics-backend.onrender.com
 
-      # Secrets: set values in the Render dashboard
+      # Secrets (set values in the Render dashboard, not in git)
       - key: DJANGO_SECRET_KEY
         sync: false
 
-      # SQLite path on the mounted disk
-      - key: DJANGO_DB_PATH
-        value: /opt/render/project/src/backend/db.sqlite3
-
-    # Attach the defined disk (singular key: "disk")
-    disk:
-      name: backend-sqlite
-      mountPath: /opt/render/project/src/backend
-
-# Top-level disk declaration (required when attaching a disk)
-disks:
-  - name: backend-sqlite
-    sizeGB: 1
+      # PostgreSQL connection string provided by Render Postgres
+      - key: DATABASE_URL
+        sync: false
