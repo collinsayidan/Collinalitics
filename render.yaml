@@ -12,14 +12,15 @@ services:
       python manage.py collectstatic --noinput
       python manage.py migrate
 
-    startCommand: gunicorn config.wsgi:application --log-file -
+    # Slightly more robust start (helps with slow DB connections)
+    startCommand: gunicorn config.wsgi:application --log-file - --timeout 120 --workers 2
 
     envVars:
       # Non-secret vars
       - key: DJANGO_DEBUG
         value: "False"
       - key: DJANGO_ALLOWED_HOSTS
-        value: collinalitics-backend.onrender.com
+        value: collinalitics-backend-cj2b.onrender.com,.onrender.com
       - key: CORS_ALLOW_ALL_ORIGINS
         value: "True"
       - key: CSRF_TRUSTED_ORIGINS
