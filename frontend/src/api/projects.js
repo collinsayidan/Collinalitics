@@ -1,6 +1,6 @@
 
 // frontend/src/api/projects.js
-const BASE = '/api';
+const BASE = import.meta.env.VITE_API_BASE || '/api';
 
 export async function fetchProjects() {
   const res = await fetch(`${BASE}/projects/`);

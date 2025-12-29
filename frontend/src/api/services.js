@@ -1,5 +1,5 @@
 
-const BASE = '/api';
+const BASE = import.meta.env.VITE_API_BASE || '/api';
 
 export async function fetchServices() {
   const res = await fetch(`${BASE}/services/`);
