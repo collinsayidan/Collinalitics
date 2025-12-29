@@ -9,7 +9,6 @@ import PortfolioDetail from './pages/PortfolioDetail';
 import Blog from './pages/Blog';
 import About from './pages/About';
 import Contact from './pages/Contact';
-import './styles/services.css';
 
 function RouteDebug() {
   return (
@@ -35,15 +34,19 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/services/*" element={<Services />} />
+
           {/* Portfolio routes */}
           <Route path="/portfolio" element={<Portfolio />} />
           <Route path="/portfolio/:slug" element={<PortfolioDetail />} />
+
           {/* Debug helper route */}
           <Route path="/portfolio/debug" element={<RouteDebug />} />
+
           <Route path="/blog" element={<Blog />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
-          {/* Catch-all */}
+
+          {/* catch-all */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>

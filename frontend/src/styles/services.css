@@ -69,6 +69,23 @@ body {
   border: 1px solid var(--border);
 }
 
+/* Optional: taller thumbnails on portfolio list cards */
+.card.project .thumb {
+  height: 160px;                  /* default was ~140px via .projects .thumb */
+}
+
+/* Optional: tidy spacing for the portfolio detail hero image */
+.detail .thumb {
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+
+/* Optional: smooth hover cue on project cards */
+.card.project:hover .card-cta {
+  text-decoration: underline;
+}
+
+
 /* Service detail layout */
 .detail { display: grid; gap: 16px; }
 .detail-header { display: flex; align-items: center; gap: 14px; }
@@ -103,6 +120,31 @@ body {
 .icon-skeleton { width: 42px; height: 42px; border-radius: 50%; background: #101525; border: 1px solid #1b2638; }
 .lines { flex: 1; display: grid; gap: 8px; }
 .line { height: 12px; background: #101525; border: 1px solid #1b2638; border-radius: 6px; }
-.line.short { width: 60%; }
+.line.short { width: 60%;}
+
+/* Chips */
+.chip-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip {
+  display: inline-block; padding: 6px 10px; border-radius: 999px;
+  background: #0e2035; border: 1px solid #26507b; color: #bfe1ff; font-size: 0.85rem;
+}
+
+/* Key-value inline list */
+.kv { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+.kv li strong { margin-right: 8px; }
+
+/* Gallery */
+.gallery-grid {
+  display: grid; gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+}
+.gallery-item {
+  width: 100%; padding-top: 62%; /* aspect ratio box */
+  background-size: cover; background-position: center;
+  border-radius: 10px; border: 1px solid var(--border);
+}
+
+/* Simple margin utility */
+.mt-16 { margin-top: 16px; }
 
 @keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
