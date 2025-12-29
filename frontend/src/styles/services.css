@@ -169,4 +169,12 @@ body {
 }
 .btn.outline:hover { background: rgba(77,182,255,0.08); }
 
+.input {
+  background: #0e1524; color: var(--text);
+  border: 1px solid var(--border); border-radius: 10px;
+  padding: 10px 12px; outline: none;
+}
+.input:focus { border-color: #2f6aa5; box-shadow: 0 0 0 2px rgba(77,182,255,0.15); }
+.contact-form label { color: var(--muted); font-size: 0.95rem; }
+
 @keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
