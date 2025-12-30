@@ -1,0 +1,32 @@
+[
+{
+  "model": "services.servicecategory",
+  "pk": 1,
+  "fields": {
+    "name": "Analytics",
+    "slug": "analytics",
+    "description": ""
+  }
+},
+{
+  "model": "services.service",
+  "pk": 1,
+  "fields": {
+    "title": "Dashboards",
+    "slug": "dashboards",
+    "excerpt": "Visualize key metrics to uncover trends",
+    "description": "Collinalitics provides analytics consultation, dashboard design, BI integration, and strategic data storytelling for individuals, teams, and organizations.  We transform raw data into clear insights,  intuitive visuals , and decision-ready solutions combining technical precision with creative communication. From Power BI troubleshooting to end-to-end reporting systems.",
+    "category": 1,
+    "icon": "fa-chart-line",
+    "is_active": true,
+    "order": 1
+  }
+},
+{
+  "model": "services.service",
+  "pk": 2,
+  "fields": {
+    "title": "Data Analytics & Dashboard Design",
+    "slug": "data-analytics-dashboard-design",
+    "excerpt": "Clear, interactive dashboards that turn raw data into actionable insights",
+    "description": 
