@@ -5,29 +5,57 @@ services:
     name: collinalitics-backend
     env: python
     rootDir: backend
-    plan: free  # keep free since we don't attach disks
+    plan: free
 
+    # Use a stable Python runtime (Render reads runtime.txt too)
+    # (Alternatively, add backend/runtime.txt with `python-3.12.6`)
     buildCommand: |
+      pip install --upgrade pip
       pip install -r requirements.txt
-      python manage.py collectstatic --noinput
-      python manage.py migrate
+      # Collect static files so admin/static are available
+      python manage.py collectstatic --noinput || true
 
-    # Slightly more robust start (helps with slow DB connections)
-    startCommand: gunicorn config.wsgi:application --log-file - --timeout 120 --workers 2
+    # Start: run migrations then gunicorn. Timeout/workers tuned for small free instance.
+    startCommand: |
+      python manage.py migrate
+      gunicorn config.wsgi:application --bind 0.0.0.0:$PORT --log-file - --timeout 120 --workers 2
+
+    # Optional health check; Django default root would 404, so skip unless you expose /healthz
+    # healthCheckPath: /api/services/
 
     envVars:
-      # Non-secret vars
+      # Non-secret vars (safe defaults)
       - key: DJANGO_DEBUG
         value: "False"
       - key: DJANGO_ALLOWED_HOSTS
-        value: collinalitics-backend-cj2b.onrender.com,.onrender.com
+        value: collinalitics-backend-cj2b.onrender.com
+      # Let dev CORS be explicit (in production, restrict to Netlify/custom domain)
+      # If you are still testing, you can keep this True; otherwise set specific origins in settings.py.
       - key: CORS_ALLOW_ALL_ORIGINS
-        value: "True"
+        value: "False"
       - key: CSRF_TRUSTED_ORIGINS
-        value: https://collinalitics-backend-cj2b.onrender.com
+        # Add your Netlify site and any custom frontend domain here (comma-separated is NOT supported; set one string with spaces or set in settings.py).
+        value: https://<your-netlify-site>.netlify.app
 
-      # Secrets (values will be set in Render Dashboard, not committed)
+      # Secrets — set values in Render Dashboard (Environment pane). These are not committed.
       - key: DJANGO_SECRET_KEY
         sync: false
       - key: DATABASE_URL
         sync: false
+      # Optional SMTP for real email sending (recommended later)
+      # - key: EMAIL_BACKEND
+      #   value: django.core.mail.backends.smtp.EmailBackend
+      # - key: EMAIL_HOST
+      #   sync: false
+      # - key: EMAIL_PORT
+      #   value: "587"
+      # - key: EMAIL_HOST_USER
+      #   sync: false
+      # - key: EMAIL_HOST_PASSWORD
+      #   sync: false
+      # - key: EMAIL_USE_TLS
+      #   value: "True"
+      # - key: DEFAULT_FROM_EMAIL
+      #   value: hello@collinalitics.com
+      - key: CONTACT_DEST_EMAIL
+        value: hello@collinalitics.com
