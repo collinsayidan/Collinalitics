@@ -1,20 +1,41 @@
 
+// src/pages/Home.jsx
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { SITE_NAME, SITE_URL, DEFAULT_OG_IMAGE } from '../config/seo';
 
+// Decide the API base depending on environment.
+// In production (Netlify), it reads VITE_API_BASE_URL (e.g., https://.../api).
+// In local dev, it uses Vite proxy at /api.
+const isProd = import.meta.env.MODE === 'production';
+const API_BASE = isProd
+  ? import.meta.env.VITE_API_BASE_URL   // e.g., https://collinalitics-backend-cj2b.onrender.com/api
+  : '/api';                             // dev proxy to localhost:8000
+
 // Helper to fetch services (supports paginated or flat DRF responses)
 async function fetchServicesHome() {
-  const res = await fetch('/api/services/');
-  if (!res.ok) throw new Error('Failed to load services');
+  const url = `${API_BASE}/services/`;  // resolves to /api/services/ in dev and https://.../api/services/ in prod
+  const res = await fetch(url, {
+    // include cookies if you later rely on CSRF/cookie-based auth
+    credentials: 'include',
+    headers: {
+      'Accept': 'application/json',
+    },
+  });
+  if (!res.ok) {
+    const text = await res.text().catch(() => '');
+    throw new Error(`Failed to load services (${res.status}): ${text || res.statusText}`);
+  }
   const data = await res.json();
+
   // If paginated, use data.results; if array, use data; else empty
   const items = Array.isArray(data)
     ? data
     : Array.isArray(data?.results)
       ? data.results
       : [];
+
   return items;
 }
 
@@ -40,6 +61,7 @@ export default function Home() {
         );
         setItems(sorted.slice(0, 3)); // top 3
       } catch (e) {
+        console.error('Home services fetch error:', e);
         setErr(e?.message || 'Failed to load services');
       } finally {
         setLoading(false);
@@ -125,7 +147,10 @@ export default function Home() {
         {err ? (
           <div className="alert error">
             <strong>Error:</strong> {err}
-            <div className="tips">Check backend at http://localhost:8000 and Vite proxy in frontend/vite.config.js.</div>
+            <div className="tips">
+              In production, ensure <code>VITE_API_BASE_URL</code> is set to <code>https://collinalitics-backend-cj2b.onrender.com/api</code> in Netlify,
+              and redeploy with <em>Clear cache and deploy site</em>.
+            </div>
           </div>
         ) : (loading ? cardsSkeleton : cardsContent)}
       </section>

@@ -49,6 +49,7 @@ export default function PortfolioDetail() {
         const data = await fetchProject(slug);
         setProject(data);
       } catch (e) {
+        console.error('PortfolioDetail fetch error:', e);
         setErr(e?.message || 'Failed to load project');
       }
     })();
@@ -59,6 +60,10 @@ export default function PortfolioDetail() {
       <section className="container">
         <div className="alert error">
           <strong>Error:</strong> {err}
+          <div className="tips" style={{ marginTop: 6 }}>
+            Ensure the backend exposes <code>/api/portfolio/projects/</code> and, if you want
+            direct slug detail routes, set <code>lookup_field = 'slug'</code> in your Django viewset.
+          </div>
         </div>
       </section>
     );
