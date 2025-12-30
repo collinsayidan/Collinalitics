@@ -52,6 +52,13 @@
   "pk": 2,
   "fields": {
     "title": "Data Analytics & Dashboard Design",
-    "slug": "data-analytics-dashboard-design",
-    "excerpt": "Clear, interactive dashboards that turn raw data into actionable insights",
-    "description": 
+    "slug": "data-analytics-dashboard-design",  
+    "excerpt": "Transform raw data into clear insights with intuitive visuals and decision-ready solutions.",
+    "description": "Collinalitics provides analytics consultation, dashboard design, BI integration, and strategic data storytelling for individuals, teams, and organizations. From Power BI troubleshooting to end-to-end reporting systems, we combine technical precision with creative communication to deliver impactful results.",
+    "category": 1,
+    "icon": "fa-database",
+    "is_active": true,
+    "order": 2
+    }
+}
+]
