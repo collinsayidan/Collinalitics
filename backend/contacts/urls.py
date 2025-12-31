@@ -1,8 +1,9 @@
 
+# backend/contacts/urls.py
 from django.urls import path
 from .views import ContactView, ContactCsrfView
 
 urlpatterns = [
-    path('contact/', ContactView.as_view(), name='contact'),
-    path('contact/csrf/', ContactCsrfView.as_view(), name='contact_csrf'),  # <-- ADD
+    path('', ContactView.as_view(), name='contact'),          # /api/contacts/
+    path('csrf/', ContactCsrfView.as_view(), name='contact_csrf'),  # /api/contacts/csrf/
 ]

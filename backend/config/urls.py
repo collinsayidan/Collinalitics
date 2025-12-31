@@ -22,4 +22,5 @@ urlpatterns = [
     path("api/services/", include("services.urls")),
     path("api/portfolio/", include("portfolio.urls")),
     path("api/contacts/", include("contacts.urls")),
+    path("api/blog/", include("blog.urls")),  # New blog app URLs
 ]

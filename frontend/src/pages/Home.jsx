@@ -17,11 +17,8 @@ const API_BASE = isProd
 async function fetchServicesHome() {
   const url = `${API_BASE}/services/`;  // resolves to /api/services/ in dev and https://.../api/services/ in prod
   const res = await fetch(url, {
-    // include cookies if you later rely on CSRF/cookie-based auth
     credentials: 'include',
-    headers: {
-      'Accept': 'application/json',
-    },
+    headers: { 'Accept': 'application/json' },
   });
   if (!res.ok) {
     const text = await res.text().catch(() => '');
@@ -73,32 +70,32 @@ export default function Home() {
   const description = 'Empower your organization with actionable insights and drive growth through data-driven decision making.';
   const canonical = `${SITE_URL}/`;
 
-  // Skeletons while loading
+  // Skeletons while loading (Tailwind)
   const cardsSkeleton = (
-    <div className="grid">
+    <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
       {[...Array(3)].map((_, i) => (
-        <div className="card skeleton" key={i}>
-          <div className="icon-skeleton" />
-          <div className="lines">
-            <div className="line" />
-            <div className="line short" />
-          </div>
-        </div>
+        <div key={i} className="h-28 rounded-xl border border-white/10 bg-white/5 animate-pulse" />
       ))}
     </div>
   );
 
   const cardsContent = (
-    <div className="grid">
+    <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
       {items.map(s => (
-        <Link to={`/services/${s.slug}`} key={s.id} className="card">
-          <div className="icon-bubble">
-            <i className={normalizeIcon(s.icon)} aria-hidden="true"></i>
-          </div>
-          <div className="card-body">
-            <h3 className="card-title">{s.title}</h3>
-            <p className="card-excerpt">{s.excerpt}</p>
-            <div className="card-cta">View details →</div>
+        <Link
+          to={`/services/${s.slug}`}
+          key={s.id}
+          className="group rounded-xl border border-white/10 bg-white/5 p-4 hover:border-brand-500/40 hover:bg-brand-500/5 transition"
+        >
+          <div className="flex items-start gap-3">
+            <div className="grid place-items-center size-11 rounded-lg bg-white/10 text-white">
+              <i className={normalizeIcon(s.icon)} aria-hidden="true"></i>
+            </div>
+            <div className="flex-1">
+              <h3 className="font-bold text-white group-hover:text-brand-500">{s.title}</h3>
+              <p className="mt-1 text-sm text-slate-300">{s.excerpt}</p>
+              <div className="mt-2 text-brand-500 font-semibold">View details →</div>
+            </div>
           </div>
         </Link>
       ))}
@@ -133,21 +130,34 @@ export default function Home() {
         </script>
       </Helmet>
 
-      <section className="container">
-        <h1 className="page-title">Data insights that move businesses</h1>
-        <p>{description}</p>
+      {/* HERO */}
+      <section className="py-6 md:py-10">
+        <div className="rounded-2xl bg-gradient-to-br from-slate-900 to-slate-800 border border-white/10 p-6 md:p-10">
+          <div className="max-w-3xl">
+            <span className="inline-flex items-center gap-2 rounded-full bg-white/5 border border-white/10 px-3 py-1 text-xs text-slate-300">
+              <span className="size-2 rounded-full bg-brand-500" /> Collinalitics
+            </span>
+            <h1 className="mt-3 text-3xl md:text-5xl font-black text-white tracking-tight">
+              Data insights that <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-500 to-indigo-400">move businesses</span>
+            </h1>
+            <p className="mt-3 text-slate-300 md:text-lg">{description}</p>
 
-        <div className="cta-row" style={{ margin: '12px 0 22px' }}>
-          <Link className="btn primary" to="/portfolio">View Projects</Link>
-          <Link className="btn primary" to="/contact" style={{ marginLeft: 8 }}>Start a project</Link>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <Link to="/portfolio" className="btn btn-primary px-4 py-2">View Projects</Link>
+              <Link to="/contact" className="btn btn-outline px-4 py-2">Start a project</Link>
+            </div>
+          </div>
         </div>
+      </section>
 
-        <h2 className="section-title">Top services</h2>
+      {/* Top services */}
+      <section className="mt-6">
+        <h2 className="text-xl font-bold text-white">Top services</h2>
 
         {err ? (
-          <div className="alert error">
-            <strong>Error:</strong> {err}
-            <div className="tips">
+          <div className="mt-3 rounded-md border border-red-500/20 bg-red-500/10 p-4 text-red-200">
+            <strong className="font-semibold">Error:</strong> {err}
+            <div className="mt-1 text-xs text-red-300">
               In production, ensure <code>VITE_API_BASE_URL</code> is set to <code>https://collinalitics-backend-cj2b.onrender.com/api</code> in Netlify,
               and redeploy with <em>Clear cache and deploy site</em>.
             </div>

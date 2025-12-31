@@ -16,29 +16,42 @@ function FilterBar({
   onTagToggle, onIndustryChange, onStatusChange, onClear
 }) {
   return (
-    <div className="filters">
-      <div className="filters-row">
-        <div className="filters-group">
-          <div className="filters-label">Tags</div>
-          <div className="chip-row">
-            {tags.map(t => (
-              <button
-                key={t}
-                type="button"
-                className={`chip ${tag && t.toLowerCase() === tag.toLowerCase() ? 'active' : ''}`}
-                onClick={() => onTagToggle(t)}
-                title={`Filter by tag: ${t}`}
-              >
-                {t}
-              </button>
-            ))}
+    <div className="mt-4 rounded-2xl border border-white/10 bg-white/5 p-4">
+      {/* Row 1 */}
+      <div className="grid md:grid-cols-3 gap-4">
+        {/* Tags */}
+        <div>
+          <div className="text-xs text-slate-400 mb-1">Tags</div>
+          <div className="flex flex-wrap gap-2">
+            {tags.length === 0 ? (
+              <span className="text-slate-400 text-sm">No tags found</span>
+            ) : (
+              tags.map(t => {
+                const active = tag && t.toLowerCase() === tag.toLowerCase();
+                return (
+                  <button
+                    key={t}
+                    type="button"
+                    className={`rounded-full px-3 py-1 text-xs border transition
+                    ${active
+                      ? 'border-brand-500 bg-brand-500/10 text-brand-500'
+                      : 'border-white/10 bg-white/5 text-slate-300 hover:border-brand-500/40 hover:bg-brand-500/5'}`}
+                    onClick={() => onTagToggle(t)}
+                    title={`Filter by tag: ${t}`}
+                  >
+                    {t}
+                  </button>
+                );
+              })
+            )}
           </div>
         </div>
 
-        <div className="filters-group">
-          <div className="filters-label">Industry</div>
+        {/* Industry */}
+        <div>
+          <div className="text-xs text-slate-400 mb-1">Industry</div>
           <select
-            className="select"
+            className="w-full rounded-md border border-white/10 bg-slate-900 text-white px-3 py-2 focus:outline-none focus:border-brand-500"
             value={industry}
             onChange={e => onIndustryChange(e.target.value)}
           >
@@ -49,10 +62,11 @@ function FilterBar({
           </select>
         </div>
 
-        <div className="filters-group">
-          <div className="filters-label">Status</div>
+        {/* Status */}
+        <div>
+          <div className="text-xs text-slate-400 mb-1">Status</div>
           <select
-            className="select"
+            className="w-full rounded-md border border-white/10 bg-slate-900 text-white px-3 py-2 focus:outline-none focus:border-brand-500"
             value={status}
             onChange={e => onStatusChange(e.target.value)}
           >
@@ -64,8 +78,13 @@ function FilterBar({
         </div>
       </div>
 
-      <div className="filters-row">
-        <button type="button" className="btn outline" onClick={onClear}>
+      {/* Row 2 */}
+      <div className="mt-3">
+        <button
+          type="button"
+          className="btn btn-outline px-3 py-2"
+          onClick={onClear}
+        >
           Clear filters
         </button>
       </div>
@@ -91,6 +110,7 @@ export default function Portfolio() {
         const data = await fetchProjects();
         setProjects(data);
       } catch (e) {
+        console.error('Portfolio fetch error:', e);
         setErr(e?.message || 'Failed to load projects');
       } finally {
         setLoading(false);
@@ -105,7 +125,6 @@ export default function Portfolio() {
     const statusSet = new Set();
 
     projects.forEach(p => {
-      // tags_list is provided by your ProjectSerializer
       (p.tags_list || []).forEach(t => tagSet.add(t));
       if (p.industry) industrySet.add(p.industry);
       if (p.status) statusSet.add(p.status);
@@ -118,7 +137,7 @@ export default function Portfolio() {
     };
   }, [projects]);
 
-  // Apply filters (client‑side)
+  // Apply filters (client-side)
   const filtered = useMemo(() => {
     const t = tag.trim().toLowerCase();
     const ind = industry.trim().toLowerCase();
@@ -171,16 +190,21 @@ export default function Portfolio() {
   if (loading) {
     return (
       <>
-        <Helmet><title>{title}</title><link rel="canonical" href={canonical} /></Helmet>
-        <section className="container">
-          <h1 className="page-title">Portfolio</h1>
-          <div className="grid">
+        <Helmet>
+          <title>{title}</title>
+          <link rel="canonical" href={canonical} />
+        </Helmet>
+
+        <section>
+          <h1 className="text-2xl font-black text-white">Portfolio</h1>
+
+          <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {[...Array(6)].map((_, i) => (
-              <div className="card skeleton" key={i}>
-                <div className="projects thumb" />
-                <div className="lines">
-                  <div className="line" />
-                  <div className="line short" />
+              <div key={i} className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                <div className="h-40 rounded-lg bg-white/10 animate-pulse" />
+                <div className="mt-3 space-y-2">
+                  <div className="h-4 w-2/3 rounded bg-white/10 animate-pulse" />
+                  <div className="h-3 w-1/2 rounded bg-white/10 animate-pulse" />
                 </div>
               </div>
             ))}
@@ -194,13 +218,18 @@ export default function Portfolio() {
   if (err) {
     return (
       <>
-        <Helmet><title>{title}</title><link rel="canonical" href={canonical} /></Helmet>
-        <section className="container">
-          <h1 className="page-title">Portfolio</h1>
-          <div className="alert error">
+        <Helmet>
+          <title>{title}</title>
+          <link rel="canonical" href={canonical} />
+        </Helmet>
+
+        <section>
+          <h1 className="text-2xl font-black text-white">Portfolio</h1>
+
+          <div className="mt-4 rounded-md border border-red-500/20 bg-red-500/10 p-4 text-red-200">
             <strong>Error:</strong> {err}
-            <div className="tips">
-              Ensure Django is running at http://localhost:8000 and the Vite proxy forwards <code>/api</code> to it.
+            <div className="mt-1 text-xs text-red-300">
+              Ensure Django is running at <code>http://localhost:8000</code> and your Vite dev proxy forwards <code>/api</code> to it.
             </div>
           </div>
         </section>
@@ -210,10 +239,13 @@ export default function Portfolio() {
 
   return (
     <>
-      <Helmet><title>{title}</title><link rel="canonical" href={canonical} /></Helmet>
+      <Helmet>
+        <title>{title}</title>
+        <link rel="canonical" href={canonical} />
+      </Helmet>
 
-      <section className="container">
-        <h1 className="page-title">Portfolio</h1>
+      <section>
+        <h1 className="text-2xl font-black text-white">Portfolio</h1>
 
         {/* Filters */}
         <FilterBar
@@ -230,40 +262,49 @@ export default function Portfolio() {
         />
 
         {/* Result count */}
-        <p style={{ color: 'var(--muted)', margin: '-4px 0 12px' }}>
-          Showing <strong>{filtered.length}</strong> of {projects.length} case {projects.length === 1 ? 'study' : 'studies'}
-          {tag ? <> · tag: <code>{tag}</code></> : null}
-          {industry ? <> · industry: <code>{industry}</code></> : null}
-          {status ? <> · status: <code>{status}</code></> : null}
+        <p className="mt-2 text-sm text-slate-400">
+          Showing <strong className="text-slate-200">{filtered.length}</strong> of {projects.length} case {projects.length === 1 ? 'study' : 'studies'}
+          {tag && <> · tag: <code className="text-slate-300">{tag}</code></>}
+          {industry && <> · industry: <code className="text-slate-300">{industry}</code></>}
+          {status && <> · status: <code className="text-slate-300">{status}</code></>}
         </p>
 
-        {/* Empty state */}
-        {!filtered.length && (
-          <div className="alert error">
-            <strong>No results.</strong> Try clearing or changing filters.
-          </div>
-        )}
-
-        {/* Cards */}
-        <div className="grid">
+        {/* Grid */}
+        <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {filtered.map(p => (
             <Link
-              to={p.slug ? `/portfolio/${p.slug}` : '/portfolio'}
               key={p.id}
-              className="card project"
+              to={`/portfolio/${p.slug}`}
+              className="group rounded-2xl border border-white/10 bg-white/5 p-4 hover:border-brand-500/40 hover:bg-brand-500/5 transition block"
             >
-              <div
-                className="thumb"
-                style={{ backgroundImage: p.thumbnail_url ? `url(${p.thumbnail_url})` : undefined }}
-              />
-              <div className="card-body">
-                <h3 className="card-title">{p.title}</h3>
-                {p.summary && <p className="card-excerpt">{p.summary}</p>}
-                <div className="card-cta">View case study →</div>
-              </div>
+              {p.thumbnail_url && (
+                <div
+                  className="h-40 rounded-lg bg-cover bg-center mb-3 border border-white/10"
+                  style={{ backgroundImage: `url(${p.thumbnail_url})` }}
+                />
+              )}
+              <h3 className="font-bold text-white group-hover:text-brand-500">{p.title}</h3>
+              {p.summary && (
+                <p className="mt-1 text-sm text-slate-300">{p.summary}</p>
+              )}
+              <div className="mt-2 text-brand-500 font-semibold">View case study →</div>
             </Link>
           ))}
         </div>
+
+        {/* Empty state */}
+        {filtered.length === 0 && (
+          <div className="mt-6 rounded-md border border-white/10 bg-white/5 p-4 text-slate-300">
+            No projects match your filters.
+            <button
+              type="button"
+              className="ml-2 btn btn-outline px-3 py-1"
+              onClick={handleClear}
+            >
+              Clear filters
+            </button>
+          </div>
+        )}
       </section>
     </>
   );

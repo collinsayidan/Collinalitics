@@ -9,31 +9,25 @@ import { SITE_NAME, SITE_URL, DEFAULT_OG_IMAGE } from '../config/seo';
 function Section({ title, children }) {
   if (!children) return null;
   return (
-    <section style={{ marginTop: 18 }}>
-      <h2 className="section-title">{title}</h2>
-      <div className="detail-content">{children}</div>
+    <section className="mt-6">
+      <h2 className="text-lg font-bold text-white">{title}</h2>
+      <div className="mt-2 text-slate-200">{children}</div>
     </section>
   );
 }
 
-// Helpers to sanitize and render lists
+// Helpers to sanitize chips and split narrative lines
 function sanitizeChip(text) {
   if (!text) return '';
   return String(text).replace(/^[\-\s]+/, '').trim();
 }
-function splitLinesToList(text) {
-  if (!text) return null;
-  const items = String(text)
+function splitLines(text) {
+  if (!text) return [];
+  return String(text)
     .split(/\r?\n/)
     .map(s => s.trim())
     .filter(Boolean)
-    .map(s => s.replace(/^[\-\•\u2022]\s*/, '')); // strip leading -, •, bullets
-  if (!items.length) return null;
-  return (
-    <ul className="kv" style={{ listStyle: 'disc', paddingLeft: 20 }}>
-      {items.map((line, i) => <li key={i}>{line}</li>)}
-    </ul>
-  );
+    .map(s => s.replace(/^[\-\•\u2022]\s*/, ''));
 }
 
 export default function PortfolioDetail() {
@@ -57,13 +51,10 @@ export default function PortfolioDetail() {
 
   if (err) {
     return (
-      <section className="container">
-        <div className="alert error">
-          <strong>Error:</strong> {err}
-          <div className="tips" style={{ marginTop: 6 }}>
-            Ensure the backend exposes <code>/api/portfolio/projects/</code> and, if you want
-            direct slug detail routes, set <code>lookup_field = 'slug'</code> in your Django viewset.
-          </div>
+      <section className="rounded-xl border border-red-500/20 bg-red-500/10 p-4 text-red-200">
+        <strong>Error:</strong> {err}
+        <div className="mt-1 text-xs text-red-300">
+          If you want direct slug detail routes, set <code>lookup_field = 'slug'</code> in your Django ViewSet.
         </div>
       </section>
     );
@@ -72,20 +63,18 @@ export default function PortfolioDetail() {
   // Skeleton while loading
   if (!project) {
     return (
-      <section className="container">
-        <div className="detail-header skeleton row-gap-14">
-          <div className="icon-skeleton icon-skeleton-lg" aria-hidden="true" />
-          <div className="stack-8 flex-1">
-            <div className="block lg" />
-            <div className="block md" />
+      <section>
+        <div className="flex items-start gap-4">
+          <div className="size-14 rounded-lg bg-white/10 animate-pulse" />
+          <div className="flex-1 space-y-2">
+            <div className="h-6 w-56 rounded bg-white/10 animate-pulse" />
+            <div className="h-4 w-72 rounded bg-white/10 animate-pulse" />
           </div>
         </div>
-        <div className="detail-content skeleton stack-10 mt-16">
-          <div className="block" />
-          <div className="block md" />
-          <div className="block sm" />
-          <div className="block md" />
-          <div className="block" />
+        <div className="mt-6 space-y-2">
+          <div className="h-4 w-full rounded bg-white/10 animate-pulse" />
+          <div className="h-4 w-3/4 rounded bg-white/10 animate-pulse" />
+          <div className="h-4 w-2/3 rounded bg-white/10 animate-pulse" />
         </div>
       </section>
     );
@@ -95,24 +84,21 @@ export default function PortfolioDetail() {
   const canonical = `${SITE_URL}/portfolio/${project.slug || ''}`;
   const ogImage = project.hero_image_url || project.thumbnail_url || DEFAULT_OG_IMAGE;
 
-  const hasOverview =
-    project.client_name || project.industry || project.location;
-  const hasTimeline =
-    project.start_date || project.end_date || project.status;
+  const hasOverview = project.client_name || project.industry || project.location;
+  const hasTimeline = project.start_date || project.end_date || project.status;
 
-  // Sanitize chips
-  const tags = Array.isArray(project.tags_list) ? project.tags_list.map(sanitizeChip).filter(Boolean) : [];
+  const tags  = Array.isArray(project.tags_list)  ? project.tags_list.map(sanitizeChip).filter(Boolean) : [];
   const tools = Array.isArray(project.tools_list) ? project.tools_list.map(sanitizeChip).filter(Boolean) : [];
+
+  const goals    = splitLines(project.goals);
+  const approach = splitLines(project.approach);
+  const outcomes = splitLines(project.outcomes);
+  const metrics  = splitLines(project.metrics);
+
+  const gallery  = Array.isArray(project.gallery) ? project.gallery : [];
 
   return (
     <>
-      {/* DEBUG banner - remove later */}
-      <div style={{ background: '#102a43', color: '#cde9ff', padding: 10, border: '1px solid #274868', marginBottom: 10 }}>
-        <strong>DEBUG:</strong> PortfolioDetail route matched.
-        <span style={{ marginLeft: 8 }}>Slug:</span>
-        <code style={{ marginLeft: 6 }}>{slug}</code>
-      </div>
-
       <Helmet>
         <title>{title}</title>
         <link rel="canonical" href={canonical} />
@@ -128,104 +114,128 @@ export default function PortfolioDetail() {
         <meta name="twitter:image" content={ogImage} />
       </Helmet>
 
-      <article className="container detail">
-        {/* Header */}
-        <div className="detail-header">
-          <div className="icon-bubble lg">
-            <i className="fa-solid fa-briefcase" aria-hidden="true"></i>
-          </div>
-          <div>
-            <h1 className="detail-title">{project.title}</h1>
-            {project.summary && <p className="detail-excerpt">{project.summary}</p>}
-            {tags.length > 0 && (
-              <div className="chip-row mt-16">
-                {tags.map((t, i) => <span className="chip" key={i}>{t}</span>)}
-              </div>
-            )}
-          </div>
+      {/* Header */}
+      <div className="flex items-start gap-4">
+        <div className="grid place-items-center size-14 rounded-lg bg-gradient-to-br from-brand-500 to-indigo-500 text-white">
+          <i className="fa-solid fa-briefcase" aria-hidden="true"></i>
         </div>
 
-        {/* Hero image */}
-        {(project.hero_image_url || project.thumbnail_url) && (
-          <div
-            className="thumb"
-            style={{
-              backgroundImage: `url(${project.hero_image_url || project.thumbnail_url})`,
-              height: 240, marginTop: 14
-            }}
-          />
-        )}
+        <div className="flex-1">
+          <h1 className="text-2xl md:text-3xl font-black text-white">{project.title}</h1>
+          {project.summary && (
+            <p className="mt-1 text-slate-300">{project.summary}</p>
+          )}
 
-        {/* Overview */}
-        {hasOverview && (
-          <Section title="Overview">
-            <ul className="kv">
-              {project.client_name && <li><strong>Client:</strong> {project.client_name}</li>}
-              {project.industry && <li><strong>Industry:</strong> {project.industry}</li>}
-              {project.location && <li><strong>Location:</strong> {project.location}</li>}
-            </ul>
-          </Section>
-        )}
-
-        {/* Timeline & Status */}
-        {hasTimeline && (
-          <Section title="Timeline">
-            <ul className="kv">
-              {project.start_date && <li><strong>Start:</strong> {project.start_date}</li>}
-              {project.end_date && <li><strong>End:</strong> {project.end_date}</li>}
-              {project.status && <li><strong>Status:</strong> {project.status}</li>}
-            </ul>
-          </Section>
-        )}
-
-        {/* Narrative sections as bullet lists */}
-        {splitLinesToList(project.goals) && (
-          <Section title="Goals">
-            {splitLinesToList(project.goals)}
-          </Section>
-        )}
-        {splitLinesToList(project.approach) && (
-          <Section title="Approach">
-            {splitLinesToList(project.approach)}
-          </Section>
-        )}
-        {splitLinesToList(project.outcomes) && (
-          <Section title="Outcomes">
-            {splitLinesToList(project.outcomes)}
-          </Section>
-        )}
-        {splitLinesToList(project.metrics) && (
-          <Section title="Key metrics">
-            {splitLinesToList(project.metrics)}
-          </Section>
-        )}
-
-        {/* Tools */}
-        {tools.length > 0 && (
-          <Section title="Tools & technologies">
-            <div className="chip-row">
-              {tools.map((x, i) => <span className="chip" key={i}>{x}</span>)}
-            </div>
-          </Section>
-        )}
-
-        {/* Gallery */}
-        {Array.isArray(project.gallery) && project.gallery.length > 0 && (
-          <Section title="Gallery">
-            <div className="gallery-grid">
-              {project.gallery.map((url, i) => (
-                <div className="gallery-item" key={i} style={{ backgroundImage: `url(${url})` }} />
+          {tags.length > 0 && (
+            <div className="mt-3 flex flex-wrap gap-2">
+              {tags.map((t, i) => (
+                <span key={i} className="rounded-full bg-white/5 border border-white/10 px-3 py-1 text-xs text-slate-300">
+                  {t}
+                </span>
               ))}
             </div>
-          </Section>
-        )}
-
-        {/* CTAs */}
-        <div className="cta-row" style={{ marginTop: 18 }}>
-          <Link className="btn primary" to="/contact">Discuss a similar project</Link>
-          <Link className="btn primary" to="/portfolio" style={{ marginLeft: 8 }}>Back to portfolio</Link>
+          )}
         </div>
-      </article>
+      </div>
+
+      {/* Hero image */}
+      {(project.hero_image_url || project.thumbnail_url) && (
+        <div
+          className="mt-4 h-56 md:h-64 rounded-xl border border-white/10 bg-cover bg-center"
+          style={{ backgroundImage: `url(${project.hero_image_url || project.thumbnail_url})` }}
+          aria-label="Project image"
+        />
+      )}
+
+      {/* Overview & Timeline */}
+      {(hasOverview || hasTimeline) && (
+        <div className="mt-6 grid md:grid-cols-2 gap-6">
+          {hasOverview && (
+            <Section title="Overview">
+              <ul className="space-y-1">
+                {project.client_name && <li><strong className="text-white">Client:</strong> <span className="text-slate-300">{project.client_name}</span></li>}
+                {project.industry &&    <li><strong className="text-white">Industry:</strong> <span className="text-slate-300">{project.industry}</span></li>}
+                {project.location &&    <li><strong className="text-white">Location:</strong> <span className="text-slate-300">{project.location}</span></li>}
+              </ul>
+            </Section>
+          )}
+
+          {hasTimeline && (
+            <Section title="Timeline">
+              <ul className="space-y-1">
+                {project.start_date && <li><strong className="text-white">Start:</strong>   <span className="text-slate-300">{project.start_date}</span></li>}
+                {project.end_date   && <li><strong className="text-white">End:</strong>     <span className="text-slate-300">{project.end_date}</span></li>}
+                {project.status     && <li><strong className="text-white">Status:</strong>  <span className="text-slate-300">{project.status}</span></li>}
+              </ul>
+            </Section>
+          )}
+        </div>
+      )}
+
+      {/* Narrative sections */}
+      {goals.length > 0 && (
+        <Section title="Goals">
+          <ul className="list-disc pl-5 space-y-1 text-slate-300">
+            {goals.map((line, i) => <li key={i}>{line}</li>)}
+          </ul>
+        </Section>
+      )}
+      {approach.length > 0 && (
+        <Section title="Approach">
+          <ul className="list-disc pl-5 space-y-1 text-slate-300">
+            {approach.map((line, i) => <li key={i}>{line}</li>)}
+          </ul>
+        </Section>
+      )}
+      {outcomes.length > 0 && (
+        <Section title="Outcomes">
+          <ul className="list-disc pl-5 space-y-1 text-slate-300">
+            {outcomes.map((line, i) => <li key={i}>{line}</li>)}
+          </ul>
+        </Section>
+      )}
+      {metrics.length > 0 && (
+        <Section title="Key metrics">
+          <ul className="list-disc pl-5 space-y-1 text-slate-300">
+            {metrics.map((line, i) => <li key={i}>{line}</li>)}
+          </ul>
+        </Section>
+      )}
+
+      {/* Tools */}
+      {tools.length > 0 && (
+        <Section title="Tools & technologies">
+          <div className="flex flex-wrap gap-2">
+            {tools.map((x, i) => (
+              <span key={i} className="rounded-full bg-white/5 border border-white/10 px-3 py-1 text-xs text-slate-300">
+                {x}
+              </span>
+            ))}
+          </div>
+        </Section>
+      )}
+
+      {/* Gallery */}
+      {gallery.length > 0 && (
+        <Section title="Gallery">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {gallery.map((url, i) => (
+              <div
+                key={i}
+                className="h-40 rounded-lg border border-white/10 bg-cover bg-center"
+                style={{ backgroundImage: `url(${url})` }}
+                aria-label={`Gallery image ${i + 1}`}
+              />
+            ))}
+          </div>
+        </Section>
+      )}
+
+      {/* CTAs */}
+      <div className="mt-6 flex flex-wrap gap-3">
+        <Link className="btn btn-primary px-4 py-2" to="/contact">Discuss a similar project</Link>
+        <Link className="btn btn-outline px-4 py-2" to="/portfolio">Back to portfolio</Link>
+      </div>
     </>
   );
 }
