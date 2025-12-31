@@ -4,15 +4,44 @@ import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { SITE_NAME, SITE_URL, DEFAULT_OG_IMAGE } from '../config/seo';
 
+// Optional: simple social links component (icons via Font Awesome)
+function SocialLinks({ links = {} }) {
+  const items = [
+    { key: 'linkedin', icon: 'fa-brands fa-linkedin', label: 'LinkedIn' },
+    { key: 'github',   icon: 'fa-brands fa-github',   label: 'GitHub' },
+    { key: 'x',        icon: 'fa-brands fa-x-twitter',label: 'X' },
+    { key: 'web',      icon: 'fa-solid fa-globe',     label: 'Website' },
+  ].filter(i => links[i.key]);
+
+  if (items.length === 0) return null;
+  return (
+    <div className="mt-2 flex flex-wrap gap-2 text-slate-300">
+      {items.map(i => (
+        <a
+          key={i.key}
+          href={links[i.key]}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1 px-2 py-1 rounded-md border border-white/10 bg-white/5 hover:border-brand-500/40 hover:bg-brand-500/5 transition text-xs"
+        >
+          <i className={i.icon} aria-hidden="true" />
+          <span>{i.label}</span>
+        </a>
+      ))}
+    </div>
+  );
+}
+
 export default function About() {
   const title = `About | ${SITE_NAME}`;
   const description =
     'Collinalitics helps organizations turn raw data into clear, actionable insights—through analytics, automation, and modern data engineering.';
   const canonical = `${SITE_URL}/about`;
 
+  // Content blocks
   const whatWeDo = [
     { icon: 'fa-solid fa-broom', title: 'Data cleaning & automation', blurb: 'Python, SQL, Excel workflows that remove manual effort and reduce error.' },
-    { icon: 'fa-solid fa-chart-line', title: 'Analytics dashboards', blurb: 'Tableau, Power BI, and custom web dashboards that drive decisions.' },
+    { icon: 'fa-solid fa-chart-line', title: 'Analytics dashboards', blurb: 'Tableau, Power BI, and bespoke web dashboards that drive decisions.' },
     { icon: 'fa-solid fa-diagram-project', title: 'APIs & integrations', blurb: 'Django REST + Postgres backends that connect tools and teams.' },
     { icon: 'fa-solid fa-window-restore', title: 'Lightweight web apps', blurb: 'Purpose-built apps that surface insights in everyday operations.' },
   ];
@@ -24,8 +53,44 @@ export default function About() {
     { title: 'Own the result', text: 'Align on outcomes and measure success with transparent metrics.' },
   ];
 
-  const tools = [
-    'Python','Pandas','SQL','Django REST','Postgres','React','Vite','Tableau','Power BI'
+  const tools = ['Python','Pandas','SQL','Django REST','Postgres','React','Vite','Tableau','Power BI'];
+
+  // TEAM — replace with real people/photos
+  const team = [
+    {
+      name: 'Collins Ayidan',
+      role: 'Founder & Data Engineer',
+      bio: 'Leads data platforms, automation pipelines, and analytics delivery with a focus on speed and clarity.',
+      photo: '/images/team/collins.jpg', // place an image under frontend/public/images/team/
+      links: {
+        linkedin: 'https://www.linkedin.com/',
+        github:   'https://github.com/collinsayidan',
+        web:      'https://collinalitics.com',
+      },
+    },
+    {
+      name: 'Analyst (You?)',
+      role: 'Analytics & BI',
+      bio: 'Turns messy data into decision-ready insights and dashboards that stakeholders love.',
+      photo: '/images/team/analyst.jpg',
+      links: {},
+    },
+    {
+      name: 'Engineer (You?)',
+      role: 'Software & Integrations',
+      bio: 'Builds reliable APIs and integrations that connect the data dots across systems.',
+      photo: '/images/team/engineer.jpg',
+      links: {},
+    },
+  ];
+
+  // CLIENT LOGOS — replace svg/png paths with real client marks
+  const clients = [
+    { name: 'Client A', logo: '/images/clients/client-a.svg' },
+    { name: 'Client B', logo: '/images/clients/client-b.svg' },
+    { name: 'Client C', logo: '/images/clients/client-c.svg' },
+    { name: 'Client D', logo: '/images/clients/client-d.svg' },
+    { name: 'Client E', logo: '/images/clients/client-e.svg' },
   ];
 
   const moments = [
@@ -87,6 +152,24 @@ export default function About() {
         </div>
       </section>
 
+      {/* CLIENT LOGOS */}
+      <section className="mt-4">
+        <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+          <div className="flex flex-wrap items-center justify-center gap-6">
+            {clients.map(c => (
+              <div key={c.name} className="opacity-80 hover:opacity-100 transition">
+                <img
+                  src={c.logo}
+                  alt={`${c.name} logo`}
+                  className="h-8 md:h-10 object-contain"
+                  loading="lazy"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* WHAT WE DO */}
       <section className="mt-6">
         <h2 className="text-xl font-bold text-white">What we do</h2>
@@ -131,8 +214,44 @@ export default function About() {
         </div>
       </section>
 
+      {/* TEAM */}
+      <section className="mt-10">
+        <h2 className="text-xl font-bold text-white">Team</h2>
+        <p className="mt-1 text-slate-300">Small, focused, and outcome‑driven.</p>
+
+        <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {team.map(member => (
+            <div key={member.name} className="rounded-2xl border border-white/10 bg-white/5 p-5">
+              <div className="flex items-center gap-4">
+                <div className="shrink-0">
+                  {/* Use <img> from /public/images/team/... or fallback icon */}
+                  {member.photo ? (
+                    <img
+                      src={member.photo}
+                      alt={`${member.name} avatar`}
+                      className="size-14 rounded-xl object-cover border border-white/10"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div className="size-14 rounded-xl grid place-items-center bg-white/10 text-white">
+                      <i className="fa-solid fa-user" aria-hidden="true"></i>
+                    </div>
+                  )}
+                </div>
+                <div className="min-w-0">
+                  <div className="font-bold text-white">{member.name}</div>
+                  <div className="text-sm text-slate-400">{member.role}</div>
+                  <SocialLinks links={member.links} />
+                </div>
+              </div>
+              <p className="mt-3 text-sm text-slate-300">{member.bio}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* MINI TIMELINE / VALUES */}
-      <section className="mt-8">
+      <section className="mt-10">
         <h2 className="text-xl font-bold text-white">How we think</h2>
         <div className="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-3">
           {moments.map((m) => (
