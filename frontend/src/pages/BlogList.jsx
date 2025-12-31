@@ -226,46 +226,56 @@ export default function BlogList() {
     <>
       <Helmet><title>{title}</title><link rel="canonical" href={canonical} /></Helmet>
 
-      {/* HERO */}
-      <section className="py-6 md:py-10">
-        <div className="rounded-2xl bg-gradient-to-br from-slate-900 to-slate-800 border border-white/10 p-6 md:p-10">
-          <div className="max-w-3xl">
-            <span className="inline-flex items-center gap-2 rounded-full bg-white/5 border border-white/10 px-3 py-1 text-xs text-slate-300">
-              <span className="size-2 rounded-full bg-brand-500" /> Collinalitics Blog
-            </span>
-            <h1 className="mt-3 text-3xl md:text-5xl font-black text-white tracking-tight">
-              Practical insights &amp; playbooks
-            </h1>
-            <p className="mt-3 text-slate-300 md:text-lg">
-              {description}
-            </p>
+     
+    {/* HERO */}
+    <section className="py-6 md:py-10">
+    <div className="rounded-2xl app-bg-secondary app-border p-6 md:p-10">
+        <div className="max-w-3xl">
+        <span className="inline-flex items-center gap-2 rounded-full app-bg app-border px-3 py-1 text-xs app-text-muted">
+            <span className="size-2 rounded-full bg-brand-500" /> Collinalitics Blog
+        </span>
 
-            {/* Search + Suggested tags */}
-            <form onSubmit={handleSearch} className="mt-6 flex flex-wrap gap-3">
-              <input
-                name="q"
-                defaultValue={qParam}
-                placeholder="Search articles..."
-                className="flex-1 min-w-[220px] rounded-md border border-white/10 bg-slate-900 text-white px-3 py-2 focus:outline-none focus:border-brand-500"
-              />
-              <button type="submit" className="btn btn-primary px-4 py-2">Search</button>
-              {suggestedTags.length > 0 && (
-                <div className="flex flex-wrap gap-2">
-                  {suggestedTags.map((t) => {
-                    const active = tagParam && t.toLowerCase() === tagParam.toLowerCase();
-                    return (
-                      <button
-                        key={t}
-                        type="button"
-                        className={`rounded-full px-3 py-1 text-xs border transition
-                        ${active
-                          ? 'border-brand-500 bg-brand-500/10 text-brand-500'
-                          : 'border-white/10 bg-white/5 text-slate-300 hover:border-brand-500/40 hover:bg-brand-500/5'}`}
-                        onClick={() => handleTag(t)}
-                        title={`Filter by tag: ${t}`}
-                      >
-                        {t}
-                      </button>
+        <h1 className="mt-3 text-3xl md:text-5xl font-black text-[var(--app-text)] tracking-tight">
+            Practical insights &amp; playbooks
+        </h1>
+
+        <p className="mt-3 app-text-muted md:text-lg">
+            {description}
+        </p>
+
+        {/* Search + Suggested tags */}
+        <form onSubmit={handleSearch} className="mt-6 flex flex-wrap gap-3">
+            <input
+            name="q"
+            defaultValue={qParam}
+            placeholder="Search articles..."
+            className="flex-1 min-w-[220px] rounded-md app-border app-bg text-[var(--app-text)] px-3 py-2 focus:outline-none focus:border-brand-500"
+            />
+
+            <button type="submit" className="btn btn-primary px-4 py-2">
+            Search
+            </button>
+
+            {suggestedTags.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+                {suggestedTags.map((t) => {
+                const active = tagParam && t.toLowerCase() === tagParam.toLowerCase();
+                return (
+                    <button
+                    key={t}
+                    type="button"
+                    className={`rounded-full px-3 py-1 text-xs border transition
+                        ${
+                        active
+                            ? 'border-brand-500 bg-brand-500/10 text-brand-500'
+                            : 'app-border app-bg app-text-muted hover:border-brand-500/40 hover:bg-brand-500/5'
+                        }`}
+                    onClick={() => handleTag(t)}
+                    title={`Filter by tag: ${t}`}
+                    >
+                    {t}
+                    </button>
+
                     );
                   })}
                 </div>

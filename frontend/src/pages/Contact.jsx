@@ -1,18 +1,12 @@
-
 // frontend/src/pages/Contact.jsx
 import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { SITE_NAME, SITE_URL } from '../config/seo';
 
-// Decide API base (prod uses VITE_API_BASE_URL, dev uses Vite proxy)
 const isProd = import.meta.env.MODE === 'production';
 const API_BASE = isProd ? import.meta.env.VITE_API_BASE_URL : '/api';
-
-// If your backend uses /api/contact/ instead of /api/contacts/,
-// change this to 'contact' and the CSRf/bootstrap path below will follow.
 const CONTACT_PATH = 'contacts';
 
-// Read the 'csrftoken' cookie set by Django
 function getCookie(name) {
   const value = `; ${document.cookie}`;
   const parts = value.split(`; ${name}=`);
@@ -28,8 +22,9 @@ export default function Contact() {
     phone: '',
     subject: '',
     message: '',
-    hp_field: '', // honeypot (bots fill, humans don't)
+    hp_field: '',
   });
+
   const [busy, setBusy] = useState(false);
   const [ok, setOk] = useState(false);
   const [err, setErr] = useState(null);
@@ -37,13 +32,13 @@ export default function Contact() {
   const title = `Contact | ${SITE_NAME}`;
   const canonical = `${SITE_URL}/contact`;
 
-  // Ensure csrftoken cookie exists on first load (bootstrap)
   useEffect(() => {
-    // Example: GET /api/contacts/csrf/ should set csrftoken cookie
-    fetch(`${API_BASE}/${CONTACT_PATH}/csrf/`, { method: 'GET', credentials: 'include' })
-      .catch(() => {});
+    fetch(`${API_BASE}/${CONTACT_PATH}/csrf/`, {
+      method: 'GET',
+      credentials: 'include',
+    }).catch(() => {});
   }, []);
-  
+
   const onChange = (e) => {
     const { name, value } = e.target;
     setForm((f) => ({ ...f, [name]: value }));
@@ -62,24 +57,26 @@ export default function Contact() {
     setErr(null);
 
     const v = validate();
-    if (v) { setErr(v); return; }
+    if (v) {
+      setErr(v);
+      return;
+    }
 
     setBusy(true);
     try {
-      const csrftoken = getCookie('csrftoken');  // read CSRF cookie
+      const csrftoken = getCookie('csrftoken');
 
       const res = await fetch(`${API_BASE}/${CONTACT_PATH}/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-CSRFToken': csrftoken,               // send CSRF header
+          'X-CSRFToken': csrftoken,
         },
-        credentials: 'include',                   // include cookies
+        credentials: 'include',
         body: JSON.stringify(form),
       });
 
       if (!res.ok) {
-        // DRF often returns JSON with {detail: "..."} or validation errors
         const body = await res.json().catch(() => ({}));
         throw new Error(body?.detail || 'Failed to send. Please try again.');
       }
@@ -88,13 +85,19 @@ export default function Contact() {
 
       setOk(true);
       setForm({
-        name: '', email: '', company: '', phone: '',
-        subject: '', message: '', hp_field: ''
+        name: '',
+        email: '',
+        company: '',
+        phone: '',
+        subject: '',
+        message: '',
+        hp_field: '',
       });
 
-      // Optional backend flag
       if (body?.email_error) {
-        setErr('Your message was received, but email notification failed. We will still see it in Admin.');
+        setErr(
+          'Your message was received, but email notification failed. We will still see it in Admin.'
+        );
       }
     } catch (e) {
       setErr(e.message || 'Something went wrong.');
@@ -114,29 +117,29 @@ export default function Contact() {
         />
       </Helmet>
 
-      {/* Page layout */}
+      {/* Layout */}
       <section className="grid lg:grid-cols-2 gap-6">
-        {/* Form card */}
-        <div className="rounded-2xl bg-white/5 border border-white/10 p-6">
-          <h1 className="text-2xl font-black text-white">Let’s talk</h1>
-          <p className="mt-2 text-slate-300">
+
+        {/* FORM CARD */}
+        <div className="rounded-2xl app-bg-secondary app-border p-6">
+          <h1 className="text-2xl font-black text-[var(--app-text)]">Let’s talk</h1>
+          <p className="mt-2 app-text-muted">
             Start a project, request a quote, or ask a question. We’ll respond promptly.
           </p>
 
           {ok && (
-            <div className="mt-4 rounded-md border border-emerald-500/30 bg-emerald-500/10 p-4 text-emerald-200">
+            <div className="mt-4 rounded-md border border-emerald-500/30 bg-emerald-500/10 p-4 text-emerald-600">
               Thanks! Your message has been sent. We’ll get back to you soon.
             </div>
           )}
 
           {err && (
-            <div className="mt-4 rounded-md border border-red-500/30 bg-red-500/10 p-4 text-red-200">
+            <div className="mt-4 rounded-md border border-red-500/30 bg-red-500/10 p-4 text-red-600">
               <strong className="font-semibold">Error:</strong> {err}
             </div>
           )}
 
           <form onSubmit={onSubmit} className="mt-6 space-y-4 max-w-xl">
-            {/* Honeypot: hidden input; bots often fill it, humans won't */}
             <input
               type="text"
               name="hp_field"
@@ -148,62 +151,68 @@ export default function Contact() {
               tabIndex={-1}
             />
 
+            {/* Name */}
             <div>
-              <label className="block text-sm text-slate-300">Name *</label>
+              <label className="block text-sm app-text-muted">Name *</label>
               <input
                 name="name"
                 value={form.name}
                 onChange={onChange}
                 required
-                className="mt-1 w-full rounded-md border border-white/10 bg-slate-900 text-white px-3 py-2 focus:outline-none focus:border-brand-500"
+                className="mt-1 w-full rounded-md app-border app-bg text-[var(--app-text)] px-3 py-2 focus:outline-none focus:border-brand-500"
               />
             </div>
 
+            {/* Email */}
             <div>
-              <label className="block text-sm text-slate-300">Email *</label>
+              <label className="block text-sm app-text-muted">Email *</label>
               <input
                 name="email"
                 type="email"
                 value={form.email}
                 onChange={onChange}
                 required
-                className="mt-1 w-full rounded-md border border-white/10 bg-slate-900 text-white px-3 py-2 focus:outline-none focus:border-brand-500"
+                className="mt-1 w-full rounded-md app-border app-bg text-[var(--app-text)] px-3 py-2 focus:outline-none focus:border-brand-500"
               />
             </div>
 
+            {/* Company */}
             <div>
-              <label className="block text-sm text-slate-300">Company</label>
+              <label className="block text-sm app-text-muted">Company</label>
               <input
                 name="company"
                 value={form.company}
                 onChange={onChange}
-                className="mt-1 w-full rounded-md border border-white/10 bg-slate-900 text-white px-3 py-2 focus:outline-none focus:border-brand-500"
+                className="mt-1 w-full rounded-md app-border app-bg text-[var(--app-text)] px-3 py-2 focus:outline-none focus:border-brand-500"
               />
             </div>
 
+            {/* Phone */}
             <div>
-              <label className="block text-sm text-slate-300">Phone</label>
+              <label className="block text-sm app-text-muted">Phone</label>
               <input
                 name="phone"
                 value={form.phone}
                 onChange={onChange}
-                className="mt-1 w-full rounded-md border border-white/10 bg-slate-900 text-white px-3 py-2 focus:outline-none focus:border-brand-500"
+                className="mt-1 w-full rounded-md app-border app-bg text-[var(--app-text)] px-3 py-2 focus:outline-none focus:border-brand-500"
               />
             </div>
 
+            {/* Subject */}
             <div>
-              <label className="block text-sm text-slate-300">Subject *</label>
+              <label className="block text-sm app-text-muted">Subject *</label>
               <input
                 name="subject"
                 value={form.subject}
                 onChange={onChange}
                 required
-                className="mt-1 w-full rounded-md border border-white/10 bg-slate-900 text-white px-3 py-2 focus:outline-none focus:border-brand-500"
+                className="mt-1 w-full rounded-md app-border app-bg text-[var(--app-text)] px-3 py-2 focus:outline-none focus:border-brand-500"
               />
             </div>
 
+            {/* Message */}
             <div>
-              <label className="block text-sm text-slate-300">Message *</label>
+              <label className="block text-sm app-text-muted">Message *</label>
               <textarea
                 name="message"
                 value={form.message}
@@ -211,7 +220,7 @@ export default function Contact() {
                 rows={6}
                 required
                 minLength={10}
-                className="mt-1 w-full rounded-md border border-white/10 bg-slate-900 text-white px-3 py-2 focus:outline-none focus:border-brand-500"
+                className="mt-1 w-full rounded-md app-border app-bg text-[var(--app-text)] px-3 py-2 focus:outline-none focus:border-brand-500"
               />
             </div>
 
@@ -225,17 +234,21 @@ export default function Contact() {
           </form>
         </div>
 
-        {/* Info card */}
-        <div className="rounded-2xl bg-gradient-to-br from-slate-900 to-slate-800 border border-white/10 p-6">
-          <h2 className="text-xl font-bold text-white">What you can expect</h2>
-          <ul className="mt-3 space-y-2 text-slate-300 list-disc pl-5">
+        {/* INFO CARD */}
+        <div className="rounded-2xl app-bg-secondary app-border p-6">
+          <h2 className="text-xl font-bold text-[var(--app-text)]">What you can expect</h2>
+
+          <ul className="mt-3 space-y-2 app-text-muted list-disc pl-5">
             <li>Reply within 1–2 business days</li>
             <li>Short, focused discovery call</li>
             <li>Clear next steps and timelines</li>
           </ul>
 
-          <div className="mt-6 text-sm text-slate-400">
-            Prefer email? <span className="text-slate-200 font-semibold">contact@collinalitics.com</span>
+          <div className="mt-6 text-sm app-text-muted">
+            Prefer email?{' '}
+            <span className="text-[var(--app-text)] font-semibold">
+              contact@collinalitics.com
+            </span>
           </div>
         </div>
       </section>

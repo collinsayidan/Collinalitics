@@ -158,22 +158,22 @@ function ServiceList() {
       <>
         <Helmet><title>{title}</title><link rel="canonical" href={canonical} /></Helmet>
 
-        {/* HERO skeleton */}
-        <section className="py-6 md:py-10">
-          <div className="rounded-2xl bg-gradient-to-br from-slate-900 to-slate-800 border border-white/10 p-6 md:p-10">
-            <div className="h-7 w-40 rounded bg-white/10 animate-pulse" />
-            <div className="mt-2 h-8 w-2/3 rounded bg-white/10 animate-pulse" />
-            <div className="mt-3 h-4 w-3/4 rounded bg-white/10 animate-pulse" />
-          </div>
-        </section>
+                  {/* HERO skeleton */}
+          <section className="py-6 md:py-10">
+            <div className="rounded-2xl app-bg-secondary app-border p-6 md:p-10">
+              <div className="h-7 w-40 rounded app-bg animate-pulse" />
+              <div className="mt-2 h-8 w-2/3 rounded app-bg animate-pulse" />
+              <div className="mt-3 h-4 w-3/4 rounded app-bg animate-pulse" />
+            </div>
+          </section>
 
-        {/* GRID skeleton */}
+            {/* GRID skeleton */}
         <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {[...Array(6)].map((_, i) => (
-            <div key={i} className="rounded-2xl border border-white/10 bg-white/5 p-4">
-              <div className="h-10 w-10 rounded-lg bg-white/10 animate-pulse" />
-              <div className="mt-3 h-4 w-2/3 rounded bg-white/10 animate-pulse" />
-              <div className="mt-2 h-3 w-1/2 rounded bg-white/10 animate-pulse" />
+            <div key={i} className="rounded-2xl app-border app-bg-secondary p-4">
+              <div className="h-10 w-10 rounded-lg app-bg animate-pulse" />
+              <div className="mt-3 h-4 w-2/3 rounded app-bg animate-pulse" />
+              <div className="mt-2 h-3 w-1/2 rounded app-bg animate-pulse" />
             </div>
           ))}
         </section>

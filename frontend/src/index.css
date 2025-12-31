@@ -2,21 +2,83 @@
 /* Tailwind v4 entry — single import */
 @import "tailwindcss";
 
-/* Define brand colors inline (v4 @theme) so utilities like bg-brand-500 work immediately */
+/* Brand colors */
 @theme {
   --color-brand-50:  #eef6ff;
   --color-brand-500: #2f81f7;
   --color-brand-700: #1f5fd1;
 }
 
-/* Optional: component classes using @apply */
+/* GLOBAL THEME SYSTEM */
+:root {
+  --app-bg: #0f172a;
+  --app-bg-secondary: #1e293b;
+  --app-text: #e2e8f0;
+  --app-text-muted: #94a3b8;
+  --app-border: #334155;
+}
+
+:root[data-theme='light'] {
+  --app-bg: #ffffff;
+  --app-bg-secondary: #f1f5f9;
+  --app-text: #0f172a;
+  --app-text-muted: #475569;
+  --app-border: #cbd5e1;
+}
+
+body {
+  background-color: var(--app-bg);
+  color: var(--app-text);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.app-bg { background-color: var(--app-bg); }
+.app-bg-secondary { background-color: var(--app-bg-secondary); }
+.app-text-muted { color: var(--app-text-muted); }
+.app-border { border-color: var(--app-border); }
+
 @layer components {
+  /* Base button */
   .btn {
-    @apply inline-flex items-center justify-center font-semibold rounded-md transition;
+    @apply inline-flex items-center justify-center font-semibold rounded-md transition
+           focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2;
   }
+
+  /* Sizes */
+  .btn-sm {
+    @apply px-3 py-1.5 text-sm;
+  }
+  .btn-md {
+    @apply px-4 py-2 text-base;
+  }
+  .btn-lg {
+    @apply px-5 py-3 text-lg;
+  }
+
+  /* Primary button (brand) */
   .btn-primary {
     @apply bg-brand-500 text-white hover:bg-brand-700;
   }
+
+  /* Secondary button (theme-aware) */
+  .btn-secondary {
+    @apply bg-[var(--app-bg-secondary)] text-[var(--app-text)]
+           border border-[var(--app-border)]
+           hover:bg-[var(--app-border)];
+  }
+
+  /* Outline button */
+  .btn-outline {
+    @apply border border-brand-500 text-brand-500
+           hover:bg-brand-500 hover:text-white;
+  }
+
+  /* Subtle button (minimal) */
+  .btn-subtle {
+    @apply text-[var(--app-text-muted)] hover:text-brand-500;
+  }
+
+  /* Link-style button */
   .btn-link {
     @apply text-brand-700 hover:text-brand-500 underline-offset-4 hover:underline;
   }
