@@ -1,110 +1,97 @@
 
-// frontend/src/api/services.js
+// frontend/src/api/projects.js
+
+// Env-aware API base (Netlify in prod, Vite proxy in dev)
 const isProd = import.meta.env.MODE === 'production';
 const API_BASE = isProd ? import.meta.env.VITE_API_BASE_URL : '/api';
 
-function extractPageFromUrl(url) {
-  if (!url) return null;
-  try {
-    const u = new URL(url);
-    const p = u.searchParams.get('page');
-    return p ? parseInt(p, 10) || null : null;
-  } catch {
-    return null;
-  }
-}
-
-async function j(url) {
+/** Basic JSON fetcher with helpful errors */
+async function fetchJson(url, options = {}) {
   const res = await fetch(url, {
     credentials: 'include',
     headers: { Accept: 'application/json' },
+    ...options,
   });
+  let bodyText = '';
+  try { bodyText = await res.clone().text(); } catch {}
   if (!res.ok) {
-    let text = '';
-    try { text = await res.text(); } catch {}
-    throw new Error(`Services request failed (${res.status}): ${text || res.statusText}`);
+    throw new Error(`Request failed (${res.status}): ${bodyText || res.statusText}`);
   }
   return res.json();
 }
 
-const toList = (d) => Array.isArray(d) ? d : (Array.isArray(d?.results) ? d.results : []);
+/** Normalize DRF paginated (results) or flat arrays */
+function toList(data) {
+  return Array.isArray(data) ? data : (Array.isArray(data?.results) ? data.results : []);
+}
 
 /**
- * Fetch a paginated page of services.
- * Accepts params: { page, category, q }
- * Returns: { list, count, next, previous, page, pageSize, totalPages }
+ * Fetch a single project by slug.
+ * Strategy:
+ * 1) Try detail-by-slug: /api/portfolio/projects/<slug>/ (requires lookup_field='slug')
+ * 2) Try filtered list:  /api/portfolio/projects/?slug=<slug>
+ * 3) Fallback: full list then find by slug
  */
-export async function fetchServicesPage(params = {}) {
+export async function fetchProject(slug) {
+  const safeSlug = encodeURIComponent(slug);
+
+  // 1) detail-by-slug
+  try {
+    const detailUrl = `${API_BASE}/portfolio/projects/${safeSlug}/`;
+    const detail = await fetchJson(detailUrl);
+    return detail;
+  } catch (err) {
+    const msg = String(err?.message || '');
+    // Only continue on 404/405; otherwise bubble up
+    if (!msg.includes('(404)') && !msg.includes('(405)')) {
+      throw err;
+    }
+  }
+
+  // 2) filtered list
+  try {
+    const filteredUrl = `${API_BASE}/portfolio/projects/?slug=${safeSlug}`;
+    const filtered = await fetchJson(filteredUrl);
+    const list = toList(filtered);
+    const found = list.find(p => p.slug === slug);
+    if (found) return found;
+  } catch {
+    // ignore and fallback
+  }
+
+  // 3) full list
+  const listUrl = `${API_BASE}/portfolio/projects/`;
+  const all = await fetchJson(listUrl);
+  const list = toList(all);
+  const match = list.find(p => p.slug === slug);
+  if (match) return match;
+
+  throw new Error('Project not found');
+}
+
+/**
+ * Fetch projects page (supports DRF pagination).
+ * Returns { list, count, next, previous }.
+ */
+export async function fetchProjectsPage(params = {}) {
   const qs = new URLSearchParams(params);
-  const url = `${API_BASE}/services/${qs.toString() ? `?${qs}` : ''}`;
-  const data = await j(url);
-
+  const url = `${API_BASE}/portfolio/projects/${qs.toString() ? `?${qs}` : ''}`;
+  const data = await fetchJson(url);
   if (Array.isArray(data)) {
-    // Non-paginated fallback
-    const list = data;
-    const count = list.length;
-    const page = parseInt(params.page || '1', 10) || 1;
-    const pageSize = list.length;
-    return { list, count, next: null, previous: null, page, pageSize, totalPages: 1 };
+    return { list: data, count: data.length, next: null, previous: null };
   }
-
-  const list = toList(data);
-  const count = typeof data?.count === 'number' ? data.count : list.length;
-  const next = data?.next ?? null;
-  const previous = data?.previous ?? null;
-
-  // Infer current page
-  const prevPage = extractPageFromUrl(previous);
-  const nextPage = extractPageFromUrl(next);
-  const pageParam = params.page ? parseInt(params.page, 10) || 1
-    : (prevPage ? prevPage + 1 : (nextPage ? nextPage - 1 : 1));
-  const page = pageParam || 1;
-
-  // Infer page size
-  const pageSize = list.length || (typeof data?.page_size === 'number' ? data.page_size : 9);
-  const totalPages = Math.max(1, Math.ceil((count || 0) / (pageSize || 9)));
-
-  return { list, count, next, previous, page, pageSize, totalPages };
+  return {
+    list: Array.isArray(data?.results) ? data.results : [],
+    count: typeof data?.count === 'number' ? data.count : 0,
+    next: data?.next ?? null,
+    previous: data?.previous ?? null,
+  };
 }
 
-/** Convenience alias (returns just the list) */
-export async function fetchServices(params = {}) {
-  const { list } = await fetchServicesPage(params);
+/**
+ * Convenience alias used by Portfolio.jsx (returns just the list)
+ */
+export async function fetchProjects(params = {}) {
+  const { list } = await fetchProjectsPage(params);
   return list;
-}
-
-/**
- * Fetch a single service by slug.
- * 1) Try detail: /api/services/<slug>/
- * 2) Fallback: list + find
- */
-export async function fetchService(slug) {
-  const s = encodeURIComponent(slug);
-  try {
-    return await j(`${API_BASE}/services/${s}/`);
-  } catch {
-    const { list } = await fetchServicesPage();
-    return list.find(x => x.slug === slug) ?? null;
-  }
-}
-
-/**
- * Related services by category (exclude current slug).
- * Uses server category filter if available; otherwise falls back to client filtering.
- */
-export async function fetchRelatedServices({ category, excludeSlug, limit = 3 } = {}) {
-  if (!category) return [];
-  try {
-    const { list } = await fetchServicesPage({ category, page: 1 });
-    return list.filter(s => s.slug !== excludeSlug).slice(0, limit);
-  } catch {
-    const { list } = await fetchServicesPage();
-    return list
-      .filter(s =>
-        (s.slug !== excludeSlug) &&
-        (String(s.category || s.category_name || s.category_slug || '').toLowerCase()
-          === String(category).toLowerCase())
-      )
-      .slice(0, limit);
-  }
 }
