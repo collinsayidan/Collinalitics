@@ -14,6 +14,7 @@ urlpatterns = [
     # Root and health checks
     path("", index, name="index"),           # GET /
     path("health/", health, name="health"),  # GET /health/
+    path("support/", include("support.urls")), # Support app URLs
 
     # Admin
     path("admin/", admin.site.urls),
