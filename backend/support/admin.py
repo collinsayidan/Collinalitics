@@ -1,5 +1,7 @@
 from django.contrib import admin
 from .models import Thread, Message
+from .models import KnowledgeDocument, KnowledgeEmbedding
+
 
 @admin.register(Thread)
 class ThreadAdmin(admin.ModelAdmin):
@@ -14,12 +16,20 @@ class MessageAdmin(admin.ModelAdmin):
     list_filter = ("sender", "created_at")
     search_fields = ("text",)
 
-from .models import KnowledgeDocument, KnowledgeEmbedding
+
+# ✅ Move this ABOVE KnowledgeDocumentAdmin
+class KnowledgeEmbeddingInline(admin.TabularInline):
+    model = KnowledgeEmbedding
+    extra = 0
+    fields = ("created_at",)
+    readonly_fields = ("created_at",)
+
 
 @admin.register(KnowledgeDocument)
 class KnowledgeDocumentAdmin(admin.ModelAdmin):
     list_display = ("title", "slug", "created_at")
     search_fields = ("title", "content", "tags")
+    inlines = [KnowledgeEmbeddingInline]
 
 
 @admin.register(KnowledgeEmbedding)

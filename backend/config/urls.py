@@ -18,6 +18,7 @@ urlpatterns = [
 
     # Admin
     path("admin/", admin.site.urls),
+     path('api/', include('ask.urls')),
 
     # APIs (separate prefixes per app to avoid conflicts)
     path("api/services/", include("services.urls")),

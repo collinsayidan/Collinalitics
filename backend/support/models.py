@@ -1,6 +1,7 @@
 from django.db import models
 from pgvector.django import VectorField
 
+
 class Thread(models.Model):
     STATUS_CHOICES = [
         ("open", "Open"),
@@ -39,19 +40,26 @@ class Message(models.Model):
     def __str__(self):
         return f"[{self.sender}] {self.text[:40]}"
 
+
 class KnowledgeDocument(models.Model):
     title = models.CharField(max_length=200)
     slug = models.SlugField(unique=True)
     content = models.TextField()
-    tags = models.CharField(max_length=200, blank=True)  # comma-separated
+    tags = models.CharField(max_length=200, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.title
 
+
 class KnowledgeEmbedding(models.Model):
-    document = models.ForeignKey(KnowledgeDocument, on_delete=models.CASCADE)
-    embedding = VectorField(dimensions=1536)  # OpenAI embedding size
+    document = models.ForeignKey(
+        KnowledgeDocument,
+        on_delete=models.CASCADE,
+        related_name="embeddings"
+    )
+    content = models.TextField()  # chunk text
+    embedding = VectorField()  # correct argument name
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

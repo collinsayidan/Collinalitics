@@ -3,9 +3,16 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
 
+from django.conf import settings
+from openai import OpenAI
+client = OpenAI(api_key=settings.OPENAI_API_KEY)
+
+from .utils.retrieval import search_knowledge_base
 from .models import Thread, Message
 from .serializers import ThreadSerializer
-from .rag import generate_bot_reply  # we'll create this next
+from .rag import generate_bot_reply
+
+
 
 class StartThreadView(APIView):
     def post(self, request):
@@ -57,3 +64,40 @@ class SendMessageView(APIView):
 
         serializer = ThreadSerializer(thread)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+class AskView(APIView):
+    def post(self, request):
+        question = request.data.get("question")
+
+        if not question:
+            return Response({"error": "Question is required"}, status=400)
+
+        results = search_knowledge_base(question)
+
+        context_text = "\n\n".join(
+            f"- {r['document'].title}: {r['document'].content}"
+            for r in results
+        )
+
+        prompt = f"""
+You are a helpful assistant. Use the context below to answer the question.
+
+Context:
+{context_text}
+
+Question: {question}
+
+Answer:
+"""
+
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[{"role": "user", "content": prompt}]
+        )
+
+        answer = response.choices[0].message["content"]
+
+        return Response({
+            "answer": answer,
+            "sources": [r["document"].title for r in results]
+        })
