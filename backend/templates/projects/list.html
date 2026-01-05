@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Your Projects</h2>
+
+{% for p in projects %}
+<div class="card mb-3">
+    <div class="card-body">
+        <h5>{{ p.title }}</h5>
+        <p>{{ p.description }}</p>
+        <span class="badge bg-dark">{{ p.status }}</span>
+    </div>
+</div>
+{% empty %}
+<p>No projects yet.</p>
+{% endfor %}
+{% endblock %}

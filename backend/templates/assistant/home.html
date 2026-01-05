@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>AI Assistant</h2>
+<p>Ask me anything about your data, reports, or training.</p>
+
+<form method="POST">
+    {% csrf_token %}
+    <textarea name="question" class="form-control mb-3" rows="3"></textarea>
+    <button class="btn btn-dark">Ask</button>
+</form>
+
+{% if answer %}
+<div class="card mt-4">
+    <div class="card-body">
+        <h5>Answer</h5>
+        <p>{{ answer }}</p>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

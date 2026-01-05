@@ -1,49 +1,48 @@
+# services/serializers.py
 
 from rest_framework import serializers
-from .models import ServiceCategory, Service, ServiceFeature, ServiceProject
+from .models import Service, ServiceCategory
+from portfolio.serializers import ProjectSerializer
 
-class ServiceFeatureSerializer(serializers.ModelSerializer):
+
+class ServiceCategorySerializer(serializers.ModelSerializer):
     class Meta:
-        model = ServiceFeature
-        fields = ('id', 'label')
+        model = ServiceCategory
+        fields = ("id", "name", "slug")
 
 
 class ServiceSerializer(serializers.ModelSerializer):
-    features = ServiceFeatureSerializer(many=True, read_only=True)
-    category = serializers.SlugRelatedField(slug_field='slug', read_only=True)
-    projects = serializers.SerializerMethodField()
+    category = ServiceCategorySerializer(read_only=True)
+    related_projects = ProjectSerializer(many=True, read_only=True)
 
     class Meta:
         model = Service
         fields = (
-            'id', 'title', 'slug', 'excerpt', 'description', 'category',
-            'icon', 'is_active', 'order', 'features', 'projects'
+            "id",
+            "title",
+            "slug",
+            "excerpt",
+            "description",
+            "description_html",
+            "icon",
+
+            # Pricing
+            "price_min",
+            "price_max",
+            "price_currency",
+            "price_unit",
+
+            # Category
+            "category",
+
+            # Lists
+            "features_list",
+            "tools_list",
+
+            # Related case studies
+            "related_projects",
+
+            # Timestamps
+            "created_at",
+            "updated_at",
         )
-
-    def get_projects(self, obj):
-        """
-        Return ordered case studies via the through model (ServiceProject),
-        not via obj.projects, which no longer exists.
-        """
-        items = []
-        qs = ServiceProject.objects.filter(service=obj)\
-                                   .select_related('project')\
-                                   .order_by('order', 'id')
-        for link in qs:
-            p = link.project
-            items.append({
-                'id': p.id,
-                'slug': getattr(p, 'slug', None),
-                'title': getattr(p, 'title', str(p)),
-                'thumbnail_url': getattr(p, 'thumbnail_url', None),
-                'order': link.order,
-            })
-        return items
-
-
-class ServiceCategorySerializer(serializers.ModelSerializer):
-    services = ServiceSerializer(many=True, read_only=True)
-
-    class Meta:
-        model = ServiceCategory
-        fields = ('id', 'name', 'slug', 'description', 'services')

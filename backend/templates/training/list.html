@@ -1,0 +1,43 @@
+<h3>Beginner</h3>
+{% for m in beginner %}
+    {% include "training/module_card.html" %}
+{% empty %}
+    <p>No beginner modules yet.</p>
+{% endfor %}
+
+<h3>Intermediate</h3>
+{% for m in intermediate %}
+    {% include "training/module_card.html" %}
+{% empty %}
+    <p>No intermediate modules yet.</p>
+{% endfor %}
+
+<h3>Advanced</h3>
+{% for m in advanced %}
+    {% include "training/module_card.html" %}
+{% empty %}
+    <p>No advanced modules yet.</p>
+{% endfor %}
+
+{% for m in beginner %}
+    {% include "training/module_card.html" %}
+{% endfor %}
+{% for m in intermediate %}
+    {% include "training/module_card.html" %}
+{% endfor %}
+{% for m in advanced %}
+    {% include "training/module_card.html" %}
+{% endfor %}
+
+{% if recommended %}
+<div class="alert alert-primary">
+    <strong>Recommended Next Module:</strong>
+    <a href="/training/{{ recommended.id }}/">{{ recommended.title }}</a>
+</div>
+{% endif %}
+
+{% if completed_modules == total_modules and total_modules > 0 %}
+    <a href="/training/certificate/" class="btn btn-success mb-3">
+        View Your Certificate
+    </a>
+{% endif %}

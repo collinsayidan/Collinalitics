@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Welcome, {{ user.username }}</h2>
+
+<div class="row">
+
+    <div class="col-md-4">
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Projects</h5>
+                <p class="card-text">View your analytics projects and deliverables.</p>
+                <a href="#" class="btn btn-dark">Open</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Reports</h5>
+                <p class="card-text">Access dashboards, insights, and summaries.</p>
+                <a href="#" class="btn btn-dark">Open</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Training</h5>
+                <p class="card-text">Track your learning progress and modules.</p>
+                <a href="#" class="btn btn-dark">Open</a>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

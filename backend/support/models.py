@@ -58,7 +58,7 @@ class KnowledgeEmbedding(models.Model):
         on_delete=models.CASCADE,
         related_name="embeddings"
     )
-    content = models.TextField()  # chunk text
+    content = models.TextField(null=True, blank=True) # chunk text
     embedding = VectorField()  # correct argument name
     created_at = models.DateTimeField(auto_now_add=True)
 

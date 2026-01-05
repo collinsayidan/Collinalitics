@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Certificate of Completion</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+            padding: 50px;
+            background: #f9f9f9;
+        }
+        .certificate {
+            border: 5px solid #333;
+            padding: 40px;
+            background: white;
+            display: inline-block;
+        }
+        h1 {
+            margin-bottom: 10px;
+        }
+        .name {
+            font-size: 28px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="certificate">
+    <h1>Certificate of Completion</h1>
+    <p>This certifies that</p>
+
+    <div class="name">
+        {{ request.user.get_full_name|default:request.user.username }}
+    </div>
+
+    <p>has successfully completed all training modules.</p>
+
+    <p><em>Issued on {{ now|date:"F j, Y" }}</em></p>
+</div>
+
+</body>
+</html>

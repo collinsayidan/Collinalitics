@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Inbox</h2>
+
+{% for convo in conversations %}
+<div class="card mb-3">
+    <div class="card-body">
+        <h5>{{ convo.client.username }} ↔ {{ convo.consultant.username }}</h5>
+        <a href="/messaging/{{ convo.id }}/" class="btn btn-dark mt-2">Open Conversation</a>
+    </div>
+</div>
+{% empty %}
+<p>No conversations yet.</p>
+{% endfor %}
+{% endblock %}

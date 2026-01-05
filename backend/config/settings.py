@@ -26,6 +26,16 @@ INSTALLED_APPS = [
     "portfolio",
     "services",
     "support",
+    "accounts",
+    "dashboard",
+    "clients",
+    "projects",
+    "reports",
+    "training",
+    "assistant",
+    "messaging",
+
+
 ]
 
 # MIDDLEWARE
