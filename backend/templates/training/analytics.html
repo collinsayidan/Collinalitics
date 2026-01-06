@@ -1,13 +1,67 @@
-<h2>Your Training Analytics</h2>
+{% extends "base_dashboard.html" %}
 
-<p><strong>Total modules:</strong> {{ total }}</p>
-<p><strong>Completed:</strong> {{ completed }}</p>
+{% block title %}Training Analytics{% endblock %}
+{% block page_title %}Training Analytics{% endblock %}
 
-<h3>Completion by Level</h3>
-<ul>
-    <li>Beginner: {{ beginner }}</li>
-    <li>Intermediate: {{ intermediate }}</li>
-    <li>Advanced: {{ advanced }}</li>
-</ul>
+{% block dashboard_content %}
 
-<a href="/training/" class="btn btn-dark">Back to Training</a>
+<h2 class="text-light mb-4">Your Training Analytics</h2>
+
+<!-- OVERVIEW CARDS -->
+<div class="row g-4 mb-4">
+
+    <div class="col-md-4">
+        <div class="card bg-dark border border-secondary shadow-sm p-4">
+            <h5 class="text-secondary">Total Modules</h5>
+            <h2 class="text-light">{{ total }}</h2>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card bg-dark border border-secondary shadow-sm p-4">
+            <h5 class="text-secondary">Completed</h5>
+            <h2 class="text-light">{{ completed }}</h2>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card bg-dark border border-secondary shadow-sm p-4">
+            <h5 class="text-secondary">Completion Rate</h5>
+            <h2 class="text-light">
+                {% if total > 0 %}
+                    {{ completed|divisibleby:total|yesno:"100,0" }}%
+                {% else %}
+                    0%
+                {% endif %}
+            </h2>
+        </div>
+    </div>
+
+</div>
+
+<!-- COMPLETION BY LEVEL -->
+<div class="card bg-dark border border-secondary shadow-sm p-4 mb-4">
+    <h4 class="text-light mb-3">Completion by Level</h4>
+
+    <ul class="list-group list-group-flush">
+        <li class="list-group-item bg-dark text-light border-secondary d-flex justify-content-between">
+            <span>Beginner</span>
+            <span class="badge bg-primary px-3 py-2">{{ beginner }}</span>
+        </li>
+
+        <li class="list-group-item bg-dark text-light border-secondary d-flex justify-content-between">
+            <span>Intermediate</span>
+            <span class="badge bg-info text-dark px-3 py-2">{{ intermediate }}</span>
+        </li>
+
+        <li class="list-group-item bg-dark text-light border-secondary d-flex justify-content-between">
+            <span>Advanced</span>
+            <span class="badge bg-warning text-dark px-3 py-2">{{ advanced }}</span>
+        </li>
+    </ul>
+</div>
+
+<!-- BACK BUTTON -->
+<a href="/training/" class="btn btn-outline-light">Back to Training</a>
+
+{% endblock %}

@@ -1,16 +1,22 @@
-<div class="card mb-3">
+<div class="card bg-dark border border-secondary shadow-sm mb-3">
     <div class="card-body">
-        <h5>{{ m.title }}</h5>
-        <p>{{ m.content|truncatewords:20 }}</p>
+
+        <h5 class="text-light">{{ m.title }}</h5>
+        <p class="text-secondary">{{ m.content|truncatewords:20 }}</p>
 
         {% if progress_map.m.id %}
             <span class="badge bg-success">Completed</span>
         {% else %}
             <span class="badge bg-secondary">Not completed</span>
         {% endif %}
-        <p><strong>Estimated time:</strong> {{ m.estimated_minutes }} minutes</p>
 
+        <p class="mt-2 text-light">
+            <strong>Estimated time:</strong> {{ m.estimated_minutes }} minutes
+        </p>
 
-        <a href="/training/{{ m.id }}/" class="btn btn-dark mt-2">Open</a>
+        <a href="/training/{{ m.id }}/" class="btn btn-outline-light mt-3">
+            Open
+        </a>
+
     </div>
 </div>

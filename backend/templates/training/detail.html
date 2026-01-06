@@ -1,26 +1,32 @@
-{% extends "base.html" %}
-{% block content %}
-<h2>{{ module.title }}</h2>
+{% extends "base_dashboard.html" %}
 
-<p>{{ module.content }}</p>
+{% block title %}{{ module.title }}{% endblock %}
+{% block page_title %}Training Module{% endblock %}
 
-{% if progress.completed %}
-    <span class="badge bg-success">Completed</span>
-{% else %}
-    <form method="POST" class="mt-3">
-        {% csrf_token %}
-        <button class="btn btn-dark">Mark as Completed</button>
-    </form>
-{% endif %}
+{% block dashboard_content %}
 
-<a href="/training/" class="btn btn-secondary mt-4">Back to Training</a>
+<h2 class="text-light mb-4">{{ module.title }}</h2>
+
+<div class="card bg-dark border border-secondary shadow-sm p-4">
+
+    <p class="text-secondary">{{ module.content }}</p>
+
+    {% if progress.completed %}
+        <span class="badge bg-success px-3 py-2 mt-3">Completed</span>
+
+        <div class="alert alert-success mt-4">
+            You have completed this module.
+        </div>
+
+    {% else %}
+        <form method="POST" class="mt-4">
+            {% csrf_token %}
+            <button class="btn btn-primary w-100">Mark as Completed</button>
+        </form>
+    {% endif %}
+
+</div>
+
+<a href="/training/" class="btn btn-outline-light mt-4">Back to Training</a>
+
 {% endblock %}
-
-{% if progress.completed %}
-    <div class="alert alert-success">You have completed this module.</div>
-{% else %}
-    <form method="POST">
-        {% csrf_token %}
-        <button class="btn btn-success">Mark as Completed</button>
-    </form>
-{% endif %}

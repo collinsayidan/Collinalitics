@@ -1,0 +1,44 @@
+{% extends "base_dashboard.html" %}
+
+{% block title %}Edit Project{% endblock %}
+{% block page_title %}Edit Project{% endblock %}
+
+{% block dashboard_content %}
+
+<h2 class="text-light mb-4">Edit Project</h2>
+
+<div class="card bg-dark border border-secondary shadow-sm p-4">
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <div class="mb-3">
+            <label class="text-light">Title</label>
+            <input type="text" name="title" value="{{ project.title }}" class="form-control bg-secondary text-light border-0">
+        </div>
+
+        <div class="mb-3">
+            <label class="text-light">Description</label>
+            <textarea name="description" class="form-control bg-secondary text-light border-0" rows="4">{{ project.description }}</textarea>
+        </div>
+
+        <div class="mb-3">
+            <label class="text-light">Status</label>
+            <select name="status" class="form-select bg-secondary text-light border-0">
+                <option {% if project.status == "Pending" %}selected{% endif %}>Pending</option>
+                <option {% if project.status == "In Progress" %}selected{% endif %}>In Progress</option>
+                <option {% if project.status == "Completed" %}selected{% endif %}>Completed</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="text-light">Deadline</label>
+            <input type="date" name="deadline" value="{{ project.deadline|date:'Y-m-d' }}" class="form-control bg-secondary text-light border-0">
+        </div>
+
+        <button class="btn btn-success w-100">Save Changes</button>
+    </form>
+
+</div>
+
+{% endblock %}

@@ -1,6 +1,22 @@
-<h2>{{ quiz.title }} - Results</h2>
+<div class="card bg-dark border border-secondary shadow-sm p-4">
 
-<p>You scored {{ score }} out of {{ total }}</p>
+    <h2 class="text-light mb-3">{{ quiz.title }} — Results</h2>
 
-<a href="/training/" class="btn btn-dark">Back to Training</a>
-<a href="/training/certificate/" class="btn btn-success">Download Certificate</a>
+    <p class="text-secondary fs-5">
+        You scored 
+        <span class="text-light fw-bold">{{ score }}</span> 
+        out of 
+        <span class="text-light fw-bold">{{ total }}</span>
+    </p>
+
+    <div class="mt-4 d-flex gap-3">
+        <a href="/training/" class="btn btn-outline-light">
+            Back to Training
+        </a>
+
+        <a href="/training/certificate/" class="btn btn-success">
+            Download Certificate
+        </a>
+    </div>
+
+</div>

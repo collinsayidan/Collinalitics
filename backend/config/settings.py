@@ -1,16 +1,21 @@
 import os
 from pathlib import Path
+import dj_database_url
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# ---------------------------------------------------------
 # SECURITY
+# ---------------------------------------------------------
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "dev-secret-key")
 DEBUG = os.getenv("DEBUG", "True") == "True"
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "*").split(",")
+
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
-
+# ---------------------------------------------------------
 # APPLICATIONS
+# ---------------------------------------------------------
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -34,11 +39,11 @@ INSTALLED_APPS = [
     "training",
     "assistant",
     "messaging",
-
-
 ]
 
+# ---------------------------------------------------------
 # MIDDLEWARE
+# ---------------------------------------------------------
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -51,7 +56,9 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "config.urls"
 
+# ---------------------------------------------------------
 # TEMPLATES
+# ---------------------------------------------------------
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -71,19 +78,36 @@ TEMPLATES = [
 WSGI_APPLICATION = "config.wsgi.application"
 ASGI_APPLICATION = "config.asgi.application"
 
-# DATABASE
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.getenv("DB_NAME", "collinalitics_local"),
-        "USER": os.getenv("DB_USER", "postgres"),
-        "PASSWORD": os.getenv("DB_PASSWORD", "1366"),
-        "HOST": os.getenv("DB_HOST", "localhost"),
-        "PORT": os.getenv("DB_PORT", "5432"),
-    }
-}
+# ---------------------------------------------------------
+# DATABASES (Local vs Render)
+# ---------------------------------------------------------
 
+# If NOT running on Render → use local DB
+if os.getenv("RENDER") != "true":
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": "collinalitics_local",
+            "USER": "postgres",
+            "PASSWORD": "1366",
+            "HOST": "localhost",
+            "PORT": "5432",
+        }
+    }
+
+# If running on Render → use DATABASE_URL
+else:
+    DATABASES = {
+        "default": dj_database_url.config(
+            default=os.getenv("DATABASE_URL"),
+            conn_max_age=600,
+            ssl_require=True
+        )
+    }
+
+# ---------------------------------------------------------
 # PASSWORD VALIDATION
+# ---------------------------------------------------------
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
@@ -91,13 +115,17 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
+# ---------------------------------------------------------
 # INTERNATIONALIZATION
+# ---------------------------------------------------------
 LANGUAGE_CODE = "en-us"
 TIME_ZONE = "UTC"
 USE_I18N = True
 USE_TZ = True
 
+# ---------------------------------------------------------
 # STATIC & MEDIA
+# ---------------------------------------------------------
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_DIRS = [BASE_DIR / "static"]

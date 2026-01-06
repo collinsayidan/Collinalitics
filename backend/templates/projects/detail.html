@@ -1,11 +1,26 @@
-{% extends "base.html" %}
-{% block content %}
-<h2>{{ project.title }}</h2>
+{% extends "base_dashboard.html" %}
 
-<p>{{ project.description }}</p>
+{% block title %}Project Details{% endblock %}
+{% block page_title %}Project Details{% endblock %}
 
-<p><strong>Status:</strong> {{ project.status }}</p>
-<p><strong>Created:</strong> {{ project.created_at }}</p>
+{% block dashboard_content %}
 
-<a href="/projects/" class="btn btn-secondary mt-3">Back to Projects</a>
+<h2 class="mb-4 text-light">{{ project.title }}</h2>
+
+<div class="card bg-dark border border-secondary shadow-sm p-4">
+
+    <p class="text-secondary">{{ project.description }}</p>
+
+    <p class="text-light mt-3">
+        <strong>Status:</strong> {{ project.status }}
+    </p>
+
+    <p class="text-light">
+        <strong>Created:</strong> {{ project.created_at }}
+    </p>
+
+    <a href="/projects/" class="btn btn-outline-light mt-4">Back to Projects</a>
+
+</div>
+
 {% endblock %}

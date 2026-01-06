@@ -1,34 +1,41 @@
-{% extends "base.html" %}
+{% extends "base_dashboard.html" %}
 
-{% block content %}
-<h2>Dashboard</h2>
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
 
-<div class="row">
+{% block dashboard_content %}
+
+<h2 class="mb-4">Dashboard</h2>
+
+<div class="row g-4">
+
     <div class="col-md-4">
-        <div class="card mb-3">
+        <div class="card bg-dark border border-secondary shadow-sm h-100">
             <div class="card-body">
-                <h5>Projects</h5>
-                <a href="/projects/" class="btn btn-dark">View Projects</a>
+                <h5 class="text-light">Projects</h5>
+                <a href="/projects/" class="btn btn-outline-light w-100">View Projects</a>
             </div>
         </div>
     </div>
 
     <div class="col-md-4">
-        <div class="card mb-3">
+        <div class="card bg-dark border border-secondary shadow-sm h-100">
             <div class="card-body">
-                <h5>Reports</h5>
-                <a href="/reports/" class="btn btn-dark">View Reports</a>
+                <h5 class="text-light">Reports</h5>
+                <a href="/reports/" class="btn btn-outline-light w-100">View Reports</a>
             </div>
         </div>
     </div>
 
     <div class="col-md-4">
-        <div class="card mb-3">
+        <div class="card bg-dark border border-secondary shadow-sm h-100">
             <div class="card-body">
-                <h5>Training</h5>
-                <a href="/training/" class="btn btn-dark">Training Modules</a>
+                <h5 class="text-light">Training</h5>
+                <a href="/training/" class="btn btn-outline-light w-100">Training Modules</a>
             </div>
         </div>
     </div>
+
 </div>
+
 {% endblock %}

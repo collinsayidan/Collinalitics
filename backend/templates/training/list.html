@@ -1,43 +1,93 @@
-<h3>Beginner</h3>
-{% for m in beginner %}
-    {% include "training/module_card.html" %}
-{% empty %}
-    <p>No beginner modules yet.</p>
-{% endfor %}
+{% extends "base_dashboard.html" %}
 
-<h3>Intermediate</h3>
-{% for m in intermediate %}
-    {% include "training/module_card.html" %}
-{% empty %}
-    <p>No intermediate modules yet.</p>
-{% endfor %}
+{% block title %}Training Modules{% endblock %}
+{% block page_title %}Training Modules{% endblock %}
 
-<h3>Advanced</h3>
-{% for m in advanced %}
-    {% include "training/module_card.html" %}
-{% empty %}
-    <p>No advanced modules yet.</p>
-{% endfor %}
+{% block dashboard_content %}
 
-{% for m in beginner %}
-    {% include "training/module_card.html" %}
-{% endfor %}
-{% for m in intermediate %}
-    {% include "training/module_card.html" %}
-{% endfor %}
-{% for m in advanced %}
-    {% include "training/module_card.html" %}
-{% endfor %}
+<h2 class="text-light fw-bold mb-4">Your Training Modules</h2>
 
+<!-- ========================= -->
+<!-- OVERALL PROGRESS -->
+<!-- ========================= -->
+<div class="card bg-dark border border-secondary shadow-sm p-4 mb-4">
+    <h5 class="text-light mb-3">Overall Progress</h5>
+
+    {% with p=progress_percentage|default:0 %}
+    <div class="progress bg-secondary rounded-pill" style="height: 18px;">
+        <div
+            class="progress-bar bg-success fw-bold"
+            role="progressbar"
+            style="width: {{ p }}%;"
+            aria-valuenow="{{ p }}"
+            aria-valuemin="0"
+            aria-valuemax="100"
+        >
+            {{ p }}%
+        </div>
+    </div>
+    {% endwith %}
+</div>
+
+<!-- ========================= -->
+<!-- RECOMMENDED MODULE -->
+<!-- ========================= -->
 {% if recommended %}
-<div class="alert alert-primary">
-    <strong>Recommended Next Module:</strong>
-    <a href="/training/{{ recommended.id }}/">{{ recommended.title }}</a>
+<div class="alert bg-dark border border-info shadow-sm text-light mb-4">
+    <div class="d-flex align-items-center">
+        <div class="me-2 text-info fw-bold">Recommended Next Module:</div>
+        <a href="{% url 'training_detail' recommended.id %}" class="text-decoration-none text-info">
+            {{ recommended.title }}
+        </a>
+    </div>
 </div>
 {% endif %}
 
-{% if completed_modules == total_modules and total_modules > 0 %}
-    <a href="/training/certificate/" class="btn btn-success mb-3">
-        View Your Certificate
+<!-- ========================= -->
+<!-- BEGINNER -->
+<!-- ========================= -->
+<h3 class="text-light mt-4 mb-3">Beginner</h3>
+<div class="row g-4">
+    {% for m in beginner %}
+        {% include "training/module_card.html" with m=m %}
+    {% empty %}
+        <p class="text-secondary">No beginner modules yet.</p>
+    {% endfor %}
+</div>
+
+<!-- ========================= -->
+<!-- INTERMEDIATE -->
+<!-- ========================= -->
+<h3 class="text-light mt-5 mb-3">Intermediate</h3>
+<div class="row g-4">
+    {% for m in intermediate %}
+        {% include "training/module_card.html" with m=m %}
+    {% empty %}
+        <p class="text-secondary">No intermediate modules yet.</p>
+    {% endfor %}
+</div>
+
+<!-- ========================= -->
+<!-- ADVANCED -->
+<!-- ========================= -->
+<h3 class="text-light mt-5 mb-3">Advanced</h3>
+<div class="row g-4">
+    {% for m in advanced %}
+        {% include "training/module_card.html" with m=m %}
+    {% empty %}
+        <p class="text-secondary">No advanced modules yet.</p>
+    {% endfor %}
+</div>
+
+<!-- ========================= -->
+<!-- CERTIFICATE CTA -->
+<!-- ========================= -->
+{% if total_modules|default:0 > 0 and completed_modules == total_modules %}
+<div class="mt-5 text-center">
+    <a href="{% url 'training_certificate' %}" class="btn btn-success px-4 py-2 fw-bold">
+        🎉 View Your Certificate
     </a>
+</div>
 {% endif %}
+
+{% endblock %}

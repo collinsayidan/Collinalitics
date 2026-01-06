@@ -1,0 +1,54 @@
+<a href="/training/certificate/pdf/" class="btn btn-primary mt-3">
+    Download PDF
+</a>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: Helvetica, Arial, sans-serif;
+            text-align: center;
+            padding: 40px;
+        }
+        .certificate {
+            border: 10px solid #d4af37;
+            padding: 40px;
+        }
+        .title {
+            font-size: 32px;
+            font-weight: bold;
+        }
+        .name {
+            font-size: 24px;
+            margin-top: 20px;
+        }
+        .qr {
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="certificate">
+    <div class="title">Certificate of Completion</div>
+
+    <p>This certifies that</p>
+
+    <div class="name">
+        {{ user.get_full_name|default:user.username }}
+    </div>
+
+    <p>has successfully completed all training modules.</p>
+
+    <p>Issued on {{ date }}</p>
+
+    {% if qr_code %}
+    <div class="qr">
+        <img src="data:image/png;base64,{{ qr_code }}" width="120">
+    </div>
+    {% endif %}
+</div>
+
+</body>
+</html>

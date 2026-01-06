@@ -1,44 +1,126 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Certificate of Completion</title>
-    <style>
+{% extends "base_dashboard.html" %}
+
+{% block title %}Certificate{% endblock %}
+{% block page_title %}Certificate of Completion{% endblock %}
+
+{% block dashboard_content %}
+
+<style>
+    .certificate-wrapper {
+        display: flex;
+        justify-content: center;
+        padding: 40px;
+    }
+
+    .certificate {
+        width: 900px;
+        background: #fff;
+        padding: 60px;
+        border: 12px solid #d4af37; /* Gold */
+        border-radius: 12px;
+        text-align: center;
+        font-family: "Georgia", serif;
+        box-shadow: 0 0 25px rgba(0,0,0,0.3);
+    }
+
+    .certificate h1 {
+        font-size: 48px;
+        margin-bottom: 10px;
+        color: #1f2937;
+    }
+
+    .certificate .name {
+        font-size: 34px;
+        font-weight: bold;
+        margin: 25px 0;
+        color: #111827;
+    }
+
+    .signatures {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 50px;
+        padding: 0 40px;
+    }
+
+    .signature-block {
+        text-align: center;
+    }
+
+    .signature-line {
+        width: 200px;
+        height: 1px;
+        background: #000;
+        margin: 0 auto 5px;
+    }
+
+    .qr-section {
+        margin-top: 40px;
+    }
+
+    .certificate-id {
+        margin-top: 10px;
+        font-size: 14px;
+        color: #4b5563;
+    }
+
+    @media print {
+        .sidebar, .topbar {
+            display: none !important;
+        }
         body {
-            text-align: center;
-            font-family: Arial, sans-serif;
-            padding: 50px;
-            background: #f9f9f9;
+            background: white !important;
         }
-        .certificate {
-            border: 5px solid #333;
-            padding: 40px;
-            background: white;
-            display: inline-block;
+        .content {
+            margin: 0 !important;
+            padding: 0 !important;
         }
-        h1 {
-            margin-bottom: 10px;
-        }
-        .name {
-            font-size: 28px;
-            font-weight: bold;
-            margin: 20px 0;
-        }
-    </style>
-</head>
-<body>
+    }
+</style>
 
-<div class="certificate">
-    <h1>Certificate of Completion</h1>
-    <p>This certifies that</p>
+<div class="certificate-wrapper">
+    <div class="certificate">
 
-    <div class="name">
-        {{ request.user.get_full_name|default:request.user.username }}
+        <h1>Certificate of Completion</h1>
+
+        <p>This certifies that</p>
+
+        <div class="name">
+            {{ request.user.get_full_name|default:request.user.username }}
+        </div>
+
+        <p>has successfully completed all training modules in the Collinalitics Learning System.</p>
+
+        <p class="date">
+            Issued on {{ now|date:"F j, Y" }}
+        </p>
+
+        <!-- QR Code -->
+        <div class="qr-section">
+            <img src="data:image/png;base64,{{ qr_code }}" width="140">
+            <div class="certificate-id">
+                Certificate ID: {{ certificate_id }}
+            </div>
+        </div>
+
+        <!-- Signatures -->
+        <div class="signatures">
+            <div class="signature-block">
+                <div class="signature-line"></div>
+                <strong>Lead Instructor</strong><br>
+                Collinalitics Academy
+            </div>
+
+            <div class="signature-block">
+                <div class="signature-line"></div>
+                <strong>Platform Director</strong><br>
+                Collinalitics
+            </div>
+        </div>
+
     </div>
-
-    <p>has successfully completed all training modules.</p>
-
-    <p><em>Issued on {{ now|date:"F j, Y" }}</em></p>
 </div>
 
-</body>
-</html>
+<a href="#" onclick="window.print()" class="btn btn-outline-light mt-4">Print Certificate</a>
+
+{% endblock %}
